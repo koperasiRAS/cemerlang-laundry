@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { trackOrder } from './actions'
 import { Search, Loader2, CheckCircle2, CreditCard, ShoppingBag, Calendar, AlignLeft } from 'lucide-react'
+import DokuCheckoutButton from '@/components/DokuCheckoutButton'
 
 export default function TrackingClient() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -252,6 +253,10 @@ export default function TrackingClient() {
                     </span>
                   </div>
                 </div>
+
+                {order.payment_status !== 'paid' && !isCancelled && (
+                  <DokuCheckoutButton orderId={order.id} className="mb-4" />
+                )}
 
                 {/* WA Button */}
                 <a 
