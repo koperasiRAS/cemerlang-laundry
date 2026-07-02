@@ -6,8 +6,8 @@ import { usePathname } from 'next/navigation'
 export default function FloatingWhatsApp() {
   const pathname = usePathname()
   
-  // Hide on dashboard and login pages
-  if (pathname?.startsWith('/dashboard') || pathname?.startsWith('/login')) {
+  // Hanya tampilkan di Landing Page dan Halaman Tracking (untuk customer)
+  if (pathname !== '/' && !pathname?.startsWith('/tracking')) {
     return null
   }
 
