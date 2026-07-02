@@ -36,6 +36,7 @@ export async function POST(req: Request) {
         amount: totalAmount,
         invoice_number: order.tracking_number,
         callback_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/tracking?tracking=${order.tracking_number}`,
+        notify_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/doku/webhook`,
         auto_redirect: true
       },
       payment: {
