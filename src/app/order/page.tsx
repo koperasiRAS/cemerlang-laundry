@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import { submitPickupRequest } from './actions';
-import { Droplets, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Droplets, ArrowRight, CheckCircle2, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import toast from 'react-hot-toast';
 
 export default function OrderPage() {
@@ -65,11 +66,22 @@ export default function OrderPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6">
+    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 relative">
+      <Link href="/" className="absolute top-4 left-4 sm:top-8 sm:left-8 p-3 text-gray-500 hover:text-gray-900 hover:bg-gray-200 rounded-full transition-colors flex items-center gap-2 font-medium">
+        <ArrowLeft className="w-5 h-5" />
+        <span className="hidden sm:inline">Kembali</span>
+      </Link>
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-10">
-          <Link href="/" className="inline-flex items-center justify-center p-3 bg-primary-600 rounded-2xl mb-6 shadow-lg shadow-primary-500/30 text-white">
-            <Droplets className="w-8 h-8" />
+          <Link href="/" className="inline-block mb-6">
+            <Image 
+              src="/images/logo-cemerlang-nobg.png" 
+              alt="Cemerlang Laundry" 
+              width={400} 
+              height={120} 
+              className="h-24 sm:h-32 w-auto object-contain mx-auto"
+              priority
+            />
           </Link>
           <h1 className="text-3xl font-bold text-gray-900 tracking-tight mb-3">
             Minta Penjemputan
@@ -141,9 +153,9 @@ export default function OrderPage() {
                   name="service_type"
                   className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500"
                 >
-                  <option value="Kiloan">Cuci Kiloan</option>
-                  <option value="Satuan">Cuci Satuan</option>
-                  <option value="Dry Clean">Dry Clean</option>
+                  <option value="Cuci Komplit (Kiloan)">Cuci Komplit (Kiloan)</option>
+                  <option value="Setrika Saja (Kiloan)">Setrika Saja (Kiloan)</option>
+                  <option value="Cuci Satuan">Cuci Satuan</option>
                   <option value="Belum Tahu">Belum Tahu (Cek di tempat)</option>
                 </select>
               </div>

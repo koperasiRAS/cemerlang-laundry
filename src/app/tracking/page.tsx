@@ -1,6 +1,8 @@
 import { Metadata } from 'next'
 import TrackingClient from './TrackingClient'
-import { Package } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
+import Link from 'next/link'
+import Image from 'next/image'
 
 export const metadata: Metadata = {
   title: 'Cek Status Laundry - Cemerlang Laundry',
@@ -13,14 +15,21 @@ export default function TrackingPage() {
       <header className="bg-white/80 backdrop-blur-md border-b border-gray-100 p-4 md:p-6 shadow-sm sticky top-0 z-50">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary-500/30">
-              <Package className="w-5 h-5" />
-            </div>
-            <h1 className="text-xl font-bold text-gray-900 tracking-tight">Cemerlang Laundry</h1>
+            <Link href="/" className="mr-4 p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors">
+              <ArrowLeft className="w-5 h-5" />
+            </Link>
+            <Image 
+              src="/images/logo-cemerlang-nobg.png" 
+              alt="Cemerlang Laundry" 
+              width={280} 
+              height={80} 
+              className="h-16 sm:h-20 w-auto object-contain"
+              priority
+            />
           </div>
-          <a href="/order" className="text-sm font-medium text-primary-600 hover:text-primary-700 bg-primary-50 px-4 py-2 rounded-lg transition-colors">
+          <Link href="/order" className="text-sm font-medium text-primary-600 hover:text-primary-700 bg-primary-50 px-4 py-2 rounded-lg transition-colors">
             Pesan Jemputan
-          </a>
+          </Link>
         </div>
       </header>
 

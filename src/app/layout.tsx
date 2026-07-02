@@ -3,6 +3,9 @@ import { Inter } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
 
+import { CartProvider } from "@/context/CartContext";
+import FloatingWhatsApp from "@/components/FloatingWhatsApp";
+
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
@@ -19,7 +22,10 @@ export default function RootLayout({
     <html lang="id" className={`${inter.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col font-sans bg-gray-50 text-gray-900">
         <Toaster position="top-right" />
-        {children}
+        <CartProvider>
+          {children}
+          <FloatingWhatsApp />
+        </CartProvider>
       </body>
     </html>
   );

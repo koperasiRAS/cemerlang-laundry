@@ -3,6 +3,7 @@
 import { login } from './actions'
 import { Droplets } from 'lucide-react'
 import { useActionState } from 'react'
+import Image from 'next/image'
 
 export default function LoginPage() {
   return (
@@ -16,11 +17,17 @@ export default function LoginPage() {
         </div>
         
         <div className="relative z-10 flex flex-col items-center text-center space-y-6">
-          <div className="p-4 bg-white/10 rounded-2xl backdrop-blur-sm border border-white/20">
-            <Droplets className="w-16 h-16 text-white" />
+          <div className="p-6 bg-white/10 rounded-3xl backdrop-blur-sm border border-white/20">
+            <Image 
+              src="/images/logo-cemerlang-nobg.png" 
+              alt="Cemerlang Laundry" 
+              width={400} 
+              height={120} 
+              className="h-28 sm:h-32 w-auto object-contain drop-shadow-2xl brightness-0 invert"
+              priority
+            />
           </div>
-          <h1 className="text-5xl font-bold tracking-tight">Cemerlang Laundry</h1>
-          <p className="text-primary-100 text-lg max-w-md">
+          <p className="text-primary-100 text-lg max-w-md mt-4">
             Sistem manajemen operasional terpadu. Bersih, Cepat, dan Terpercaya.
           </p>
         </div>
@@ -31,8 +38,14 @@ export default function LoginPage() {
         <div className="w-full max-w-sm mx-auto space-y-8">
           <div className="text-center lg:text-left space-y-2">
             <div className="lg:hidden flex justify-center mb-6">
-              <div className="p-3 bg-primary-50 rounded-xl">
-                <Droplets className="w-8 h-8 text-primary-600" />
+              <div className="p-4 bg-primary-50 rounded-2xl">
+                <Image 
+                  src="/images/logo-cemerlang-nobg.png" 
+                  alt="Cemerlang Laundry" 
+                  width={280} 
+                  height={80} 
+                  className="h-16 sm:h-20 w-auto object-contain"
+                />
               </div>
             </div>
             <h2 className="text-3xl font-bold text-gray-900 tracking-tight">Selamat Datang</h2>

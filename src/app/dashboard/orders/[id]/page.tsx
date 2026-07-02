@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import StatusUpdater from './StatusUpdater'
+import PrintReceiptButton from '@/components/PrintReceiptButton'
 import { ArrowLeft, User, MapPin, Phone, CheckCircle2, Clock, FileText, PackageOpen, CreditCard, Camera, AlertTriangle, Truck, MessageCircle } from 'lucide-react'
 
 export default async function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -101,6 +102,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                <CreditCard className="w-5 h-5" /> Proses Pembayaran
              </Link>
            )}
+           <PrintReceiptButton order={order} items={items || []} />
         </div>
       </div>
 
