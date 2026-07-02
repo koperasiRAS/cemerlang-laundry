@@ -54,7 +54,7 @@ export async function trackOrder(query: string) {
       special_notes,
       service_types(name),
       customers(name, phone_number),
-      order_items(name, quantity),
+      order_items(item_name),
       order_status_history(status, created_at)
     `)
     .eq('tracking_number', cleanQuery)

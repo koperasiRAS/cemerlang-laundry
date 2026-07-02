@@ -17,7 +17,9 @@ import {
   Droplets,
   FileText,
   Package,
-  Wallet
+  Wallet,
+  Truck,
+  ClipboardList
 } from 'lucide-react'
 
 export default function Sidebar({ userRole, userName }: { userRole: string, userName: string }) {
@@ -28,6 +30,8 @@ export default function Sidebar({ userRole, userName }: { userRole: string, user
   const isOwner = userRole === 'owner' || userRole === 'super_admin'
 
   const navItems = [
+    { name: 'Tugas Hari Ini', href: '/dashboard/tasks', icon: ClipboardList, roles: ['staff', 'owner', 'super_admin'] },
+    { name: 'Request Jemput', href: '/dashboard/pickups', icon: Truck, roles: ['staff', 'owner', 'super_admin'] },
     { name: 'Terima Order', href: '/dashboard/orders/new', icon: ShoppingCart, roles: ['staff', 'owner', 'super_admin'] },
     { name: 'Daftar Order', href: '/dashboard/orders', icon: ListOrdered, roles: ['staff', 'owner', 'super_admin'] },
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, roles: ['staff', 'owner', 'super_admin'] },

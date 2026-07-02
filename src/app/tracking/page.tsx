@@ -11,11 +11,16 @@ export default function TrackingPage() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
       <header className="bg-white/80 backdrop-blur-md border-b border-gray-100 p-4 md:p-6 shadow-sm sticky top-0 z-50">
-        <div className="max-w-4xl mx-auto flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary-500/30">
-            <Package className="w-5 h-5" />
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary-500/30">
+              <Package className="w-5 h-5" />
+            </div>
+            <h1 className="text-xl font-bold text-gray-900 tracking-tight">Cemerlang Laundry</h1>
           </div>
-          <h1 className="text-xl font-bold text-gray-900 tracking-tight">Cemerlang Laundry</h1>
+          <a href="/order" className="text-sm font-medium text-primary-600 hover:text-primary-700 bg-primary-50 px-4 py-2 rounded-lg transition-colors">
+            Pesan Jemputan
+          </a>
         </div>
       </header>
 

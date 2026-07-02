@@ -7,21 +7,21 @@ import { Loader2, Plus, Trash2, Camera, UserCheck, Package, Save } from 'lucide-
 import toast from 'react-hot-toast'
 import Image from 'next/image'
 
-export default function ClientForm({ services }: { services: any[] }) {
+export default function ClientForm({ services, initialData }: { services: any[], initialData?: { pickupId?: string, name?: string, phone?: string, address?: string, notes?: string } }) {
   const supabase = createClient()
   const [loading, setLoading] = useState(false)
   const [trackingNo, setTrackingNo] = useState('')
   
   // Customer State
-  const [phone, setPhone] = useState('')
+  const [phone, setPhone] = useState(initialData?.phone || '')
   const [customerInfo, setCustomerInfo] = useState<any>(null)
-  const [customerName, setCustomerName] = useState('')
-  const [customerAddress, setCustomerAddress] = useState('')
+  const [customerName, setCustomerName] = useState(initialData?.name || '')
+  const [customerAddress, setCustomerAddress] = useState(initialData?.address || '')
 
   // Order State
   const [selectedServiceId, setSelectedServiceId] = useState('')
   const [weight, setWeight] = useState('')
-  const [specialNotes, setSpecialNotes] = useState('')
+  const [specialNotes, setSpecialNotes] = useState(initialData?.notes || '')
   const [items, setItems] = useState<any[]>([])
 
   const phoneInputRef = useRef<HTMLInputElement>(null)
@@ -140,6 +140,7 @@ export default function ClientForm({ services }: { services: any[] }) {
       }
 
       const orderData = {
+        pickup_request_id: initialData?.pickupId,
         customer_id: customerInfo?.id,
         customer_name: customerName,
         customer_phone: phone,

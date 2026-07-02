@@ -35,7 +35,25 @@ export async function createOrder(data: any) {
     return { error: error.message }
   }
 
+  // Link pickup request if provided
+  if (data.pickup_request_id && trackingNumber) {
+    const { data: orderData } = await supabase
+      .from('orders')
+      .select('id')
+      .eq('tracking_number', trackingNumber)
+      .single()
+
+    if (orderData?.id) {
+      await supabase
+        .from('pickup_requests')
+        .update({ order_id: orderData.id })
+        .eq('id', data.pickup_request_id)
+    }
+  }
+
   revalidatePath('/dashboard/orders')
+  revalidatePath('/dashboard/pickups')
+  revalidatePath('/dashboard/tasks')
   return { success: true, trackingNumber }
 }
 
