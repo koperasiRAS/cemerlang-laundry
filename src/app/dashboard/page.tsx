@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import DashboardCharts from './DashboardCharts'
-import { Clock, CheckCircle, TrendingUp, AlertTriangle, PackageSearch, LayoutDashboard } from 'lucide-react'
+import { Clock, CheckCircle, TrendingUp, AlertTriangle, PackageSearch, LayoutDashboard, Wallet, ReceiptText } from 'lucide-react'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -82,8 +82,15 @@ export default async function DashboardPage() {
     .not('status', 'in', '("siap_diambil","selesai","dibatalkan")')
     .order('estimated_completion_date', { ascending: true })
 
+  // --- Fetch Recent Transactions ---
+  const { data: recentTransactions } = await supabase
+    .from('orders')
+    .select('id, tracking_number, final_price, payment_status, created_at, payment_method, customers(name)')
+    .order('created_at', { ascending: false })
+    .limit(5)
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-12">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">Dashboard Utama</h1>
@@ -94,90 +101,164 @@ export default async function DashboardPage() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 md:gap-6">
-        <div className="bg-white/90 backdrop-blur-sm p-6 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden group hover:shadow-md hover:-translate-y-1 transition-all duration-300">
-          <div className="absolute -right-4 -top-4 w-24 h-24 bg-blue-50/50 rounded-full group-hover:scale-125 transition-transform duration-500 ease-out"></div>
-          <div className="relative">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2.5 bg-blue-50 rounded-xl text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
-                <Clock size={20} strokeWidth={2.5} />
-              </div>
-              <h3 className="font-semibold text-gray-600 text-sm">Order Aktif<br/><span className="text-xs font-medium text-gray-400">(Antrian)</span></h3>
+      {/* Cards - Added Pemasukan (Gross Revenue) */}
+      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
+        
+        {/* Order Masuk */}
+        <div className="bg-white/90 backdrop-blur-sm p-5 rounded-2xl shadow-sm border border-gray-100 group hover:shadow-md transition-all duration-300">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="p-2 bg-orange-50 rounded-lg text-orange-600">
+              <PackageSearch size={18} strokeWidth={2.5} />
             </div>
-            <p className="text-4xl font-black text-gray-900 tracking-tight">{activeCount || 0}</p>
+            <h3 className="font-semibold text-gray-600 text-xs">Order Masuk<br/><span className="text-[10px] font-medium text-gray-400">Hari Ini</span></h3>
           </div>
+          <p className="text-3xl font-black text-gray-900 tracking-tight">{todayStats.total_orders || 0}</p>
         </div>
 
-        <div className="bg-white/90 backdrop-blur-sm p-6 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden group hover:shadow-md hover:-translate-y-1 transition-all duration-300">
-          <div className="absolute -right-4 -top-4 w-24 h-24 bg-orange-50/50 rounded-full group-hover:scale-125 transition-transform duration-500 ease-out"></div>
-          <div className="relative">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2.5 bg-orange-50 rounded-xl text-orange-600 group-hover:bg-orange-500 group-hover:text-white transition-colors duration-300">
-                <PackageSearch size={20} strokeWidth={2.5} />
-              </div>
-              <h3 className="font-semibold text-gray-600 text-sm">Order Masuk<br/><span className="text-xs font-medium text-gray-400">Hari Ini</span></h3>
+        {/* Selesai */}
+        <div className="bg-white/90 backdrop-blur-sm p-5 rounded-2xl shadow-sm border border-gray-100 group hover:shadow-md transition-all duration-300">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="p-2 bg-green-50 rounded-lg text-green-600">
+              <CheckCircle size={18} strokeWidth={2.5} />
             </div>
-            <p className="text-4xl font-black text-gray-900 tracking-tight">{todayStats.total_orders || 0}</p>
+            <h3 className="font-semibold text-gray-600 text-xs">Selesai<br/><span className="text-[10px] font-medium text-gray-400">Hari Ini</span></h3>
           </div>
+          <p className="text-3xl font-black text-gray-900 tracking-tight">{completedTodayCount || 0}</p>
         </div>
 
-        <div className="bg-white/90 backdrop-blur-sm p-6 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden group hover:shadow-md hover:-translate-y-1 transition-all duration-300">
-          <div className="absolute -right-4 -top-4 w-24 h-24 bg-green-50/50 rounded-full group-hover:scale-125 transition-transform duration-500 ease-out"></div>
-          <div className="relative">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2.5 bg-green-50 rounded-xl text-green-600 group-hover:bg-green-500 group-hover:text-white transition-colors duration-300">
-                <CheckCircle size={20} strokeWidth={2.5} />
-              </div>
-              <h3 className="font-semibold text-gray-600 text-sm">Selesai<br/><span className="text-xs font-medium text-gray-400">Hari Ini</span></h3>
+        {/* Antrian Aktif */}
+        <div className="bg-white/90 backdrop-blur-sm p-5 rounded-2xl shadow-sm border border-gray-100 group hover:shadow-md transition-all duration-300">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="p-2 bg-blue-50 rounded-lg text-blue-600">
+              <Clock size={18} strokeWidth={2.5} />
             </div>
-            <p className="text-4xl font-black text-gray-900 tracking-tight">{completedTodayCount || 0}</p>
+            <h3 className="font-semibold text-gray-600 text-xs">Order Aktif<br/><span className="text-[10px] font-medium text-gray-400">Sedang Proses</span></h3>
           </div>
+          <p className="text-3xl font-black text-gray-900 tracking-tight">{activeCount || 0}</p>
         </div>
 
-        <div className="bg-white/90 backdrop-blur-sm p-6 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden group hover:shadow-md hover:-translate-y-1 transition-all duration-300">
-          <div className="absolute -right-4 -top-4 w-24 h-24 bg-red-50/50 rounded-full group-hover:scale-125 transition-transform duration-500 ease-out"></div>
-          <div className="relative">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2.5 bg-red-50 rounded-xl text-red-600 group-hover:bg-red-500 group-hover:text-white transition-colors duration-300">
-                <TrendingUp size={20} strokeWidth={2.5} />
-              </div>
-              <h3 className="font-semibold text-gray-600 text-sm">Pengeluaran<br/><span className="text-xs font-medium text-gray-400">Hari Ini</span></h3>
+        {/* Total Pemasukan (NEW) */}
+        <div className="bg-white/90 backdrop-blur-sm p-5 rounded-2xl shadow-sm border border-gray-100 group hover:shadow-md transition-all duration-300">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="p-2 bg-emerald-50 rounded-lg text-emerald-600">
+              <Wallet size={18} strokeWidth={2.5} />
             </div>
-            <p className="text-2xl font-black text-gray-900 tracking-tight mt-2">
-              Rp {(todayStats.total_pengeluaran || 0).toLocaleString('id-ID')}
-            </p>
+            <h3 className="font-semibold text-gray-600 text-xs">Pemasukan<br/><span className="text-[10px] font-medium text-gray-400">Kotor Hari Ini</span></h3>
           </div>
+          <p className="text-lg font-black text-gray-900 tracking-tight mt-1">
+            Rp {(todayStats.total_pemasukan || 0).toLocaleString('id-ID')}
+          </p>
         </div>
 
-        <div className="bg-gradient-to-br from-primary-600 to-primary-800 p-6 rounded-3xl shadow-lg relative overflow-hidden group hover:shadow-primary-500/30 hover:-translate-y-1 transition-all duration-300 text-white">
-          <div className="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-2xl group-hover:bg-white/20 transition-all duration-500"></div>
-          <div className="relative z-10">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2.5 bg-white/20 rounded-xl text-white backdrop-blur-md">
-                <TrendingUp size={20} strokeWidth={2.5} />
-              </div>
-              <h3 className="font-medium text-primary-50 text-sm">Laba Bersih<br/><span className="text-xs opacity-80">Hari Ini</span></h3>
+        {/* Pengeluaran */}
+        <div className="bg-white/90 backdrop-blur-sm p-5 rounded-2xl shadow-sm border border-gray-100 group hover:shadow-md transition-all duration-300">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="p-2 bg-red-50 rounded-lg text-red-600">
+              <TrendingUp size={18} strokeWidth={2.5} />
             </div>
-            <p className="text-2xl font-black tracking-tight mt-2">
-              Rp {(todayStats.laba_bersih || 0).toLocaleString('id-ID')}
-            </p>
+            <h3 className="font-semibold text-gray-600 text-xs">Pengeluaran<br/><span className="text-[10px] font-medium text-gray-400">Hari Ini</span></h3>
           </div>
+          <p className="text-lg font-black text-gray-900 tracking-tight mt-1">
+            Rp {(todayStats.total_pengeluaran || 0).toLocaleString('id-ID')}
+          </p>
+        </div>
+
+        {/* Laba Bersih */}
+        <div className="bg-gradient-to-br from-primary-600 to-primary-800 p-5 rounded-2xl shadow-lg text-white group hover:-translate-y-1 transition-all duration-300">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="p-2 bg-white/20 rounded-lg text-white">
+              <TrendingUp size={18} strokeWidth={2.5} />
+            </div>
+            <h3 className="font-medium text-primary-50 text-xs">Laba Bersih<br/><span className="text-[10px] opacity-80">Hari Ini</span></h3>
+          </div>
+          <p className="text-lg font-black tracking-tight mt-1">
+            Rp {(todayStats.laba_bersih || 0).toLocaleString('id-ID')}
+          </p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-white/90 backdrop-blur-sm p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
-          <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
-            <div className="w-2 h-6 bg-primary-500 rounded-full"></div>
-            Tren Arus Kas (7 Hari Terakhir)
-          </h2>
-          <div className="h-[300px]">
-            <DashboardCharts dailyTrend={weeklyStats.cashflow_trend || []} />
+        <div className="lg:col-span-2 space-y-6">
+          {/* Chart */}
+          <div className="bg-white/90 backdrop-blur-sm p-6 rounded-3xl shadow-sm border border-gray-100">
+            <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+              <div className="w-2 h-6 bg-primary-500 rounded-full"></div>
+              Tren Arus Kas (7 Hari Terakhir)
+            </h2>
+            <div className="h-[300px]">
+              <DashboardCharts dailyTrend={weeklyStats.cashflow_trend || []} />
+            </div>
+          </div>
+          
+          {/* Riwayat Transaksi (NEW) */}
+          <div className="bg-white/90 backdrop-blur-sm p-6 rounded-3xl shadow-sm border border-gray-100">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                <ReceiptText className="w-5 h-5 text-gray-500" />
+                Riwayat Transaksi Terakhir
+              </h2>
+              <Link href="/dashboard/orders" className="text-sm font-semibold text-primary-600 hover:underline">
+                Lihat Semua
+              </Link>
+            </div>
+            
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="border-b border-gray-100 text-gray-400 text-xs uppercase tracking-wider">
+                    <th className="pb-3 font-semibold">Resi</th>
+                    <th className="pb-3 font-semibold">Waktu</th>
+                    <th className="pb-3 font-semibold">Metode</th>
+                    <th className="pb-3 font-semibold text-right">Nominal</th>
+                    <th className="pb-3 font-semibold text-right">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {recentTransactions && recentTransactions.length > 0 ? recentTransactions.map((tx) => (
+                    <tr key={tx.id} className="hover:bg-gray-50/50 transition-colors">
+                      <td className="py-3 pr-4">
+                        <Link href={`/dashboard/orders/${tx.id}`} className="font-mono text-sm font-bold text-primary-600 hover:underline">
+                          {tx.tracking_number}
+                        </Link>
+                        <div className="text-xs text-gray-500">
+                          {Array.isArray(tx.customers) ? tx.customers[0]?.name : (tx.customers as any)?.name || 'Walk-in'}
+                        </div>
+                      </td>
+                      <td className="py-3 pr-4 text-sm text-gray-600">
+                        {new Date(tx.created_at).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' })}
+                      </td>
+                      <td className="py-3 pr-4">
+                        <span className="text-xs font-bold uppercase bg-gray-100 text-gray-600 px-2.5 py-1 rounded-md">
+                          {tx.payment_method?.replace('_', ' ') || '-'}
+                        </span>
+                      </td>
+                      <td className="py-3 pr-4 text-right font-bold text-gray-900">
+                        Rp {tx.final_price?.toLocaleString('id-ID') || 0}
+                      </td>
+                      <td className="py-3 text-right">
+                        <span className={`text-xs font-bold px-2.5 py-1 rounded-md ${
+                          tx.payment_status === 'lunas' ? 'bg-green-100 text-green-700' : 
+                          'bg-orange-100 text-orange-700'
+                        }`}>
+                          {tx.payment_status?.toUpperCase()}
+                        </span>
+                      </td>
+                    </tr>
+                  )) : (
+                    <tr>
+                      <td colSpan={5} className="py-6 text-center text-sm text-gray-500">
+                        Belum ada transaksi
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 
         <div className="space-y-6">
-          <div className="bg-white/90 backdrop-blur-sm p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
+          <div className="bg-white/90 backdrop-blur-sm p-6 rounded-3xl shadow-sm border border-gray-100">
             <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
               <div className="w-2 h-6 bg-blue-500 rounded-full"></div>
               Status Antrian
@@ -233,7 +314,7 @@ export default async function DashboardPage() {
       </div>
 
       {overdueOrders && overdueOrders.length > 0 && (
-        <div className="bg-red-50 p-6 rounded-2xl shadow-sm border border-red-200">
+        <div className="bg-red-50 p-6 rounded-2xl shadow-sm border border-red-200 mt-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-bold text-red-800 flex items-center gap-2">
               <AlertTriangle className="w-5 h-5" /> 
@@ -275,3 +356,4 @@ export default async function DashboardPage() {
     </div>
   )
 }
+
