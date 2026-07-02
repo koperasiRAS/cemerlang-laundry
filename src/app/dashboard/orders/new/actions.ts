@@ -59,6 +59,9 @@ export async function createOrder(data: any) {
 
 export async function searchCustomer(phone: string) {
     const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return null;
+
     const { data, error } = await supabase
         .from('customers')
         .select('*')

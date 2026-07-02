@@ -362,7 +362,12 @@ export default function ClientForm({ services, initialData }: { services: any[],
               min="0"
               max="100"
               value={discountPercent} 
-              onChange={(e) => setDiscountPercent(parseInt(e.target.value) || 0)} 
+              onChange={(e) => {
+                let val = parseInt(e.target.value) || 0;
+                if (val > 100) val = 100;
+                if (val < 0) val = 0;
+                setDiscountPercent(val);
+              }}
               className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all text-base md:text-lg" 
             />
           </div>
