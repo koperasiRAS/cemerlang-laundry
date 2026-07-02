@@ -41,7 +41,10 @@ export default async function ServicesPage() {
         {!isStaff && (
         <div className="bg-white p-6 rounded-xl shadow-sm border">
           <h2 className="text-xl font-semibold mb-4">Tambah Layanan Baru</h2>
-          <form action={async (formData) => { await addService(formData) }} className="space-y-4">
+          <form action={async (formData) => {
+            'use server'
+            await addService(formData)
+          }} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Nama Layanan</label>
               <input type="text" name="name" required className="w-full px-3 py-2 border rounded-md" placeholder="Contoh: Kiloan Reguler" />
@@ -90,7 +93,10 @@ export default async function ServicesPage() {
                     <td className="p-4 text-gray-600">{service.estimated_duration_hours} Jam</td>
                     {!isStaff && (
                       <td className="p-4 text-right">
-                        <form action={async () => { await deactivateService(service.id); }}>
+                        <form action={async () => {
+                          'use server'
+                          await deactivateService(service.id)
+                        }}>
                           <button type="submit" className="text-red-500 hover:text-red-700 p-2 rounded-md hover:bg-red-50 transition-colors" title="Nonaktifkan Layanan">
                             <Trash2 className="w-4 h-4" />
                           </button>
