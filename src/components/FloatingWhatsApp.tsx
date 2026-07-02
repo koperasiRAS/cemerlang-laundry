@@ -1,8 +1,16 @@
 "use client"
 
 import { MessageCircle } from 'lucide-react'
+import { usePathname } from 'next/navigation'
 
 export default function FloatingWhatsApp() {
+  const pathname = usePathname()
+  
+  // Hide on dashboard and login pages
+  if (pathname?.startsWith('/dashboard') || pathname?.startsWith('/login')) {
+    return null
+  }
+
   const WHATSAPP_NUMBER = "6287779560264"
   const message = "Halo Cemerlang Laundry, saya ingin bertanya tentang layanan Anda."
 
