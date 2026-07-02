@@ -83,6 +83,17 @@ export default function PrintReceiptButton({ order, items }: Props) {
         data.push(formatLine("Ongkir", order.delivery_fee.toLocaleString('id-ID')));
       }
 
+      if (order.special_notes) {
+        data.push("--------------------------------\n");
+        data.push("Catatan:\n");
+        const notes = order.special_notes.split('\n');
+        notes.forEach((note: string) => {
+           if (note.trim().length > 0) {
+             data.push(note.substring(0, 32) + '\n');
+           }
+        });
+      }
+
       data.push("--------------------------------\n");
       data.push(boldOn);
       data.push(formatLine("TOTAL:", "Rp" + totalBill.toLocaleString('id-ID')));

@@ -23,6 +23,7 @@ export default function ClientForm({ services, initialData }: { services: any[],
   const [weight, setWeight] = useState('')
   const [specialNotes, setSpecialNotes] = useState(initialData?.notes || '')
   const [items, setItems] = useState<any[]>([])
+  const [discountPercent, setDiscountPercent] = useState<number>(0)
 
   const phoneInputRef = useRef<HTMLInputElement>(null)
 
@@ -81,14 +82,17 @@ export default function ClientForm({ services, initialData }: { services: any[],
   }
 
   // Calculate estimated price
-  let estimatedPrice = 0
+  let basePrice = 0
   if (selectedService) {
     if (selectedService.unit === 'kg') {
-      estimatedPrice = (parseFloat(weight) || 0) * selectedService.base_price
+      basePrice = (parseFloat(weight) || 0) * selectedService.base_price
     } else {
-      estimatedPrice = items.reduce((acc, curr) => acc + (parseFloat(curr.price) || 0), 0)
+      basePrice = items.reduce((acc, curr) => acc + (parseFloat(curr.price) || 0), 0)
     }
   }
+  
+  const discountAmount = Math.floor(basePrice * (discountPercent / 100))
+  const estimatedPrice = basePrice - discountAmount
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && e.target instanceof HTMLInputElement) {
@@ -149,7 +153,7 @@ export default function ClientForm({ services, initialData }: { services: any[],
         weight: selectedService?.unit === 'kg' ? parseFloat(weight) : null,
         estimated_price: estimatedPrice,
         estimated_completion_date: estimatedDate.toISOString(),
-        special_notes: specialNotes,
+        special_notes: discountPercent > 0 ? `[DISKON ${discountPercent}% TERAPLIKASI: -Rp ${discountAmount.toLocaleString('id-ID')}]\n${specialNotes}` : specialNotes,
         items: selectedService?.unit === 'item' ? finalItems : []
       }
 
@@ -347,6 +351,23 @@ export default function ClientForm({ services, initialData }: { services: any[],
           </div>
         )}
 
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6 mb-6">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5 flex items-center justify-between">
+              Diskon Promo (%)
+              {discountPercent > 0 && <span className="text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded font-bold">-Rp {discountAmount.toLocaleString('id-ID')}</span>}
+            </label>
+            <input 
+              type="number" 
+              min="0"
+              max="100"
+              value={discountPercent} 
+              onChange={(e) => setDiscountPercent(parseInt(e.target.value) || 0)} 
+              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all text-base md:text-lg" 
+            />
+          </div>
+        </div>
+
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-1.5">Catatan Khusus Order (Opsional)</label>
           <textarea 
@@ -362,7 +383,15 @@ export default function ClientForm({ services, initialData }: { services: any[],
       {/* 3. Summary Section */}
       <section className="bg-primary-900 p-6 md:p-8 rounded-2xl shadow-xl text-white">
         <h2 className="text-lg font-medium mb-4 text-primary-200">3. Ringkasan Estimasi Tagihan</h2>
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+        
+        {discountPercent > 0 && (
+          <div className="flex justify-between items-center mb-2 text-primary-200/80">
+            <span>Subtotal:</span>
+            <span className="line-through">Rp {basePrice.toLocaleString('id-ID')}</span>
+          </div>
+        )}
+        
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4 pt-2">
           <span className="text-gray-300">Total Pembayaran:</span>
           <span className="text-4xl md:text-5xl font-bold text-white tracking-tight">
             Rp {estimatedPrice.toLocaleString('id-ID')}
