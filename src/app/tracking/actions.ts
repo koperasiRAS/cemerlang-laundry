@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { headers } from 'next/headers'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 
 // Simple in-memory rate limiting map
 // Key: IP address, Value: { count: number, resetAt: number }
@@ -32,7 +33,12 @@ export async function trackOrder(query: string) {
   }
 
   const cleanQuery = query.trim()
-  const supabase = await createClient()
+  
+  // Gunakan Service Role Key untuk bypass RLS agar customer umum bisa tracking tanpa login
+  const supabase = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
 
   // 3. Search logic (like before): Try by tracking number first
   let { data: orders, error } = await supabase
