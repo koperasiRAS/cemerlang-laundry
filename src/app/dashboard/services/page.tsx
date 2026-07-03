@@ -74,16 +74,17 @@ export default async function ServicesPage() {
         {/* Daftar Layanan */}
         <div className={!isStaff ? "lg:col-span-2" : ""}>
           <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-gray-50 border-b">
-                  <th className="p-4 font-semibold text-gray-600">Nama Layanan</th>
-                  <th className="p-4 font-semibold text-gray-600">Satuan</th>
-                  <th className="p-4 font-semibold text-gray-600">Harga Dasar</th>
-                  <th className="p-4 font-semibold text-gray-600">Estimasi</th>
-                  {!isStaff && <th className="p-4 font-semibold text-gray-600 text-right">Aksi</th>}
-                </tr>
-              </thead>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse whitespace-nowrap">
+                <thead>
+                  <tr className="bg-gray-50 border-b">
+                    <th className="p-4 font-semibold text-gray-600">Nama Layanan</th>
+                    <th className="p-4 font-semibold text-gray-600">Satuan</th>
+                    <th className="p-4 font-semibold text-gray-600">Harga Dasar</th>
+                    <th className="p-4 font-semibold text-gray-600">Estimasi</th>
+                    {!isStaff && <th className="p-4 font-semibold text-gray-600 text-right">Aksi</th>}
+                  </tr>
+                </thead>
               <tbody>
                 {services?.map((service) => (
                   <tr key={service.id} className="border-b last:border-0 hover:bg-gray-50">
@@ -118,5 +119,6 @@ export default async function ServicesPage() {
         </div>
       </div>
     </div>
+  </div>
   )
 }

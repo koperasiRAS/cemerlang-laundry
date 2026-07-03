@@ -71,7 +71,7 @@ export default async function CustomersPage({
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-left border-collapse whitespace-nowrap">
             <thead>
               <tr className="bg-gray-50 border-b text-sm">
                 <th className="p-4 font-semibold text-gray-600">Nama Pelanggan</th>

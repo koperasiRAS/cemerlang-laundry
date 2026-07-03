@@ -127,9 +127,9 @@ export default async function OrdersPage({
           
           {currentTab === 'semua' && !q ? (
             /* Kanban Board View */
-            <div className="flex flex-col lg:flex-row gap-6 min-w-full pb-4">
+            <div className="flex overflow-x-auto lg:overflow-visible gap-4 lg:gap-6 pb-4 snap-x hide-scrollbar lg:snap-none w-full">
               {activeStatuses.map(statusKey => (
-                <div key={statusKey} className="flex-1 min-w-[280px] bg-gray-50/50 rounded-2xl border border-gray-200/60 p-4 flex flex-col max-h-[calc(100vh-280px)]">
+                <div key={statusKey} className="snap-center shrink-0 w-[85vw] sm:w-[320px] lg:w-auto lg:shrink lg:flex-1 bg-gray-50/50 rounded-2xl border border-gray-200/60 p-4 flex flex-col max-h-[calc(100vh-280px)]">
                   <div className="flex items-center justify-between mb-4 px-1">
                     <h3 className="font-bold text-gray-700 uppercase tracking-wider text-xs">
                       {statusKey.replace('_', ' ')}

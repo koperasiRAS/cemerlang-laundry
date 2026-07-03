@@ -62,6 +62,9 @@ export default function Sidebar({ userRole, userName }: { userRole: string, user
         {isOpen ? <X size={20} /> : <Menu size={20} />}
       </button>
 
+      {/* Desktop Spacer */}
+      <div className={`hidden lg:block shrink-0 transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-72'}`} />
+
       {/* Sidebar */}
       <div 
         className={`fixed inset-y-0 left-0 z-40 bg-white/80 backdrop-blur-xl border-r border-gray-200/60 flex flex-col transition-all duration-300 ease-in-out transform shadow-sm ${

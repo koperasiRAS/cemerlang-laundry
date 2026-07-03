@@ -50,13 +50,12 @@ export default async function StaffPage() {
           <h2 className="font-semibold text-gray-800">Daftar Akun Sistem</h2>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-left border-collapse whitespace-nowrap">
             <thead>
               <tr className="bg-gray-50 border-b text-sm">
                 <th className="p-4 font-semibold text-gray-600">Nama</th>
                 <th className="p-4 font-semibold text-gray-600">Role Akses</th>
                 <th className="p-4 font-semibold text-gray-600">Status</th>
-                <th className="p-4 font-semibold text-gray-600">Terdaftar Pada</th>
                 <th className="p-4 font-semibold text-gray-600">Terdaftar Pada</th>
                 {!isStaff && <th className="p-4 font-semibold text-gray-600 text-right">Aksi</th>}
               </tr>
@@ -81,9 +80,6 @@ export default async function StaffPage() {
                     }`}>
                       {s.is_active ? 'AKTIF' : 'NONAKTIF'}
                     </span>
-                  </td>
-                  <td className="p-4 text-gray-600 text-sm">
-                    {new Date(s.created_at).toLocaleDateString('id-ID')}
                   </td>
                   <td className="p-4 text-gray-600 text-sm">
                     {new Date(s.created_at).toLocaleDateString('id-ID')}
