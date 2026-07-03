@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { logoutAction } from './actions'
+import { createClient } from '@/lib/supabase/client'
 import { 
   LayoutDashboard, 
   ShoppingCart, 
@@ -27,11 +28,37 @@ export default function Sidebar({ userRole, userName }: { userRole: string, user
   const [isOpen, setIsOpen] = useState(false) // For mobile
   const [isCollapsed, setIsCollapsed] = useState(false) // For desktop
 
+  const supabase = createClient()
+  const [pendingPickupsCount, setPendingPickupsCount] = useState(0)
+
+  useEffect(() => {
+    const fetchCount = async () => {
+      const { count } = await supabase
+        .from('pickup_requests')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'Baru')
+      setPendingPickupsCount(count || 0)
+    }
+    
+    fetchCount()
+
+    const channel = supabase
+      .channel('public:pickup_requests')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'pickup_requests' }, () => {
+        fetchCount()
+      })
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [])
+
   const isOwner = userRole === 'owner' || userRole === 'super_admin'
 
   const navItems = [
     { name: 'Tugas Hari Ini', href: '/dashboard/tasks', icon: ClipboardList, roles: ['staff', 'owner', 'super_admin'] },
-    { name: 'Request Jemput', href: '/dashboard/pickups', icon: Truck, roles: ['staff', 'owner', 'super_admin'] },
+    { name: 'Request Jemput', href: '/dashboard/pickups', icon: Truck, roles: ['staff', 'owner', 'super_admin'], badge: pendingPickupsCount },
     { name: 'Terima Order', href: '/dashboard/orders/new', icon: ShoppingCart, roles: ['staff', 'owner', 'super_admin'] },
     { name: 'Daftar Order', href: '/dashboard/orders', icon: ListOrdered, roles: ['staff', 'owner', 'super_admin'] },
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, roles: ['staff', 'owner', 'super_admin'] },
@@ -115,19 +142,34 @@ export default function Sidebar({ userRole, userName }: { userRole: string, user
                 key={item.href} 
                 href={item.href}
                 onClick={() => setIsOpen(false)}
-                className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-300 group relative overflow-hidden ${
+                className={`flex items-center justify-between px-3 py-3 rounded-xl transition-all duration-300 group relative overflow-hidden ${
                   isActive 
                     ? 'bg-gradient-to-r from-primary-50 to-primary-100/50 text-primary-700 shadow-sm ring-1 ring-primary-500/20 font-semibold' 
                     : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900 font-medium'
                 }`}
                 title={isCollapsed ? item.name : undefined}
               >
-                <item.icon 
-                  size={22} 
-                  strokeWidth={isActive ? 2.5 : 2} 
-                  className={`transition-colors duration-300 ${isActive ? 'text-primary-600' : 'text-gray-400 group-hover:text-primary-500'}`} 
-                />
-                {!isCollapsed && <span className="truncate">{item.name}</span>}
+                <div className="flex items-center gap-3">
+                  <item.icon 
+                    size={22} 
+                    strokeWidth={isActive ? 2.5 : 2} 
+                    className={`transition-colors duration-300 ${isActive ? 'text-primary-600' : 'text-gray-400 group-hover:text-primary-500'}`} 
+                  />
+                  {!isCollapsed && <span className="truncate">{item.name}</span>}
+                </div>
+                
+                {/* Badge for Notifications */}
+                {!isCollapsed && item.badge && item.badge > 0 ? (
+                  <span className="flex items-center justify-center min-w-[24px] h-6 px-1.5 text-xs font-bold text-white bg-red-500 rounded-full shadow-sm animate-pulse">
+                    {item.badge}
+                  </span>
+                ) : null}
+
+                {/* Dot for Collapsed Notifications */}
+                {isCollapsed && item.badge && item.badge > 0 ? (
+                  <div className="absolute right-3 top-3 w-2 h-2 bg-red-500 rounded-full" />
+                ) : null}
+
                 {isActive && !isCollapsed && (
                   <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary-600 rounded-r-full" />
                 )}

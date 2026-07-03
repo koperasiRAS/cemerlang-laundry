@@ -1,15 +1,32 @@
 'use client';
 
-import { useState } from 'react';
-import { submitPickupRequest } from './actions';
+import { useState, useEffect } from 'react';
+import { submitPickupRequest, getPublicServiceTypes } from './actions';
 import { Droplets, ArrowRight, CheckCircle2, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
 
+interface ServiceType {
+  id: string;
+  name: string;
+  type: string;
+  base_price: number;
+  unit: string;
+}
+
 export default function OrderPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successData, setSuccessData] = useState<{ reference: string } | null>(null);
+  const [serviceTypes, setServiceTypes] = useState<ServiceType[]>([]);
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      const data = await getPublicServiceTypes();
+      setServiceTypes(data);
+    };
+    fetchServices();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -153,10 +170,12 @@ export default function OrderPage() {
                   name="service_type"
                   className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500"
                 >
-                  <option value="Cuci Komplit (Kiloan)">Cuci Komplit (Kiloan)</option>
-                  <option value="Setrika Saja (Kiloan)">Setrika Saja (Kiloan)</option>
-                  <option value="Cuci Satuan">Cuci Satuan</option>
-                  <option value="Belum Tahu">Belum Tahu (Cek di tempat)</option>
+                  <option value="Belum Tahu (Cek di tempat)">Belum Tahu (Cek di tempat)</option>
+                  {serviceTypes.map((svc) => (
+                    <option key={svc.id} value={`${svc.name} - Rp ${svc.base_price}/${svc.unit}`}>
+                      {svc.name} - Rp {svc.base_price.toLocaleString('id-ID')}/{svc.unit}
+                    </option>
+                  ))}
                 </select>
               </div>
 

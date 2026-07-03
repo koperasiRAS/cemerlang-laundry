@@ -12,6 +12,12 @@ export default async function TasksPage() {
     .eq('status', 'Dikonfirmasi')
     .eq('preferred_date', today)
 
+  // Fetch New Online Pickups (status = Baru)
+  const { data: newPickups } = await supabase
+    .from('pickup_requests')
+    .select('*')
+    .eq('status', 'Baru')
+
   // Fetch Deliveries (status = siap_diambil, delivery_type = delivery)
   const { data: deliveries } = await supabase
     .from('orders')
@@ -27,6 +33,34 @@ export default async function TasksPage() {
         </h1>
         <p className="text-gray-500 mt-1">Daftar penjemputan dan pengantaran laundry untuk hari ini.</p>
       </div>
+
+      {newPickups && newPickups.length > 0 && (
+        <div className="mb-8 bg-red-50 border-l-4 border-red-500 p-6 rounded-r-xl shadow-sm">
+          <h2 className="text-lg font-bold text-red-800 flex items-center gap-2 mb-4">
+            <span className="flex h-3 w-3 relative">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+            </span>
+            {newPickups.length} Permintaan Online Baru Perlu Konfirmasi!
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {newPickups.map(req => (
+              <div key={req.id} className="bg-white p-4 rounded-xl shadow-sm border border-red-100 flex flex-col justify-between">
+                <div>
+                  <h3 className="font-bold text-gray-900">{req.customer_name}</h3>
+                  <p className="text-sm text-gray-600 mb-2">{req.customer_phone}</p>
+                  <p className="text-xs text-gray-500 bg-gray-50 p-2 rounded">
+                    Minta jemput: {new Date(req.preferred_date).toLocaleDateString('id-ID')} ({req.preferred_time_slot})
+                  </p>
+                </div>
+                <a href={`/dashboard/pickups?filter=active`} className="mt-4 w-full text-center px-4 py-2 bg-red-100 text-red-700 hover:bg-red-200 text-sm font-semibold rounded-lg transition-colors">
+                  Lihat Detail & Konfirmasi
+                </a>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Jemput */}

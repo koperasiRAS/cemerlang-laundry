@@ -3,8 +3,13 @@ import { Truck, MapPin, Phone, Calendar, Clock, ArrowRight, ExternalLink } from 
 import Link from 'next/link'
 import { revalidatePath } from 'next/cache'
 
-export default async function PickupsPage() {
-  const requests = await getPickupRequests()
+export default async function PickupsPage({ searchParams }: { searchParams: { filter?: string } }) {
+  const filter = searchParams.filter || 'active'
+  const allRequests = await getPickupRequests()
+  
+  const requests = filter === 'active' 
+    ? allRequests.filter(req => req.status === 'Baru' || req.status === 'Dikonfirmasi')
+    : allRequests
 
   const handleStatusChange = async (formData: FormData) => {
     'use server';
@@ -31,6 +36,10 @@ export default async function PickupsPage() {
             <Truck className="text-primary-600" /> Manajemen Penjemputan
           </h1>
           <p className="text-gray-500 mt-1">Kelola permintaan penjemputan dari pelanggan online.</p>
+        </div>
+        <div className="flex bg-gray-100 p-1 rounded-xl">
+          <Link href="/dashboard/pickups?filter=active" className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all ${filter === 'active' ? 'bg-white text-primary-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>Aktif</Link>
+          <Link href="/dashboard/pickups?filter=all" className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all ${filter === 'all' ? 'bg-white text-primary-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>Semua Riwayat</Link>
         </div>
       </div>
 

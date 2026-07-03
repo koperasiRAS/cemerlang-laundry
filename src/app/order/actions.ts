@@ -42,3 +42,23 @@ export async function submitPickupRequest(formData: FormData) {
   revalidatePath('/dashboard/pickups');
   return { success: true, reference_number: data.reference_number };
 }
+
+export async function getPublicServiceTypes() {
+  const supabase = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+
+  const { data, error } = await supabase
+    .from('service_types')
+    .select('id, name, type, base_price, unit')
+    .eq('is_active', true)
+    .order('name');
+
+  if (error) {
+    console.error('Error fetching service types:', error);
+    return [];
+  }
+
+  return data;
+}

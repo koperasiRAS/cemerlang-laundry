@@ -182,10 +182,18 @@ export default function ClientForm({ services, initialData }: { services: any[],
           {trackingNo}
         </div>
         
-        <div className="pt-6 border-t border-gray-100">
+        <div className="pt-6 border-t border-gray-100 flex flex-col sm:flex-row gap-4 justify-center">
+          <a
+            href={`https://wa.me/${phone.replace(/^0/, '62')}?text=${encodeURIComponent(`Halo ${customerName},\n\nTerima kasih telah menggunakan layanan Cemerlang Laundry. Berikut adalah nomor resi pesanan Anda: *${trackingNo}*\n\nAnda dapat melacak status pesanan secara online melalui website kami: https://${window.location.host}/tracking\n\nTerima kasih!`)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full sm:w-auto px-8 py-3.5 bg-[#25D366] hover:bg-[#128C7E] text-white font-semibold rounded-xl transition-all shadow-lg shadow-[#25D366]/30 flex items-center justify-center gap-2 hover:-translate-y-1"
+          >
+            Kirim Resi via WhatsApp
+          </a>
           <button 
             onClick={() => window.location.reload()} 
-            className="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 text-white font-semibold rounded-xl transition-all shadow-lg shadow-primary-500/30 flex items-center justify-center gap-2 mx-auto hover:-translate-y-1"
+            className="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 text-white font-semibold rounded-xl transition-all shadow-lg shadow-primary-500/30 flex items-center justify-center gap-2 hover:-translate-y-1"
           >
             <Plus className="w-5 h-5" /> Buat Order Baru
           </button>
