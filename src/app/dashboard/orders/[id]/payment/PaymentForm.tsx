@@ -3,9 +3,8 @@
 import { useState, useRef, useEffect } from 'react'
 import { processPayment } from './actions'
 import { useRouter } from 'next/navigation'
-import { Loader2, Banknote, CreditCard, QrCode, CheckCircle2, ShieldCheck } from 'lucide-react'
+import { Loader2, Banknote, CreditCard, QrCode, CheckCircle2 } from 'lucide-react'
 import toast from 'react-hot-toast'
-import DokuCheckoutButton from '@/components/DokuCheckoutButton'
 
 export default function PaymentForm({ orderId, defaultPrice }: { orderId: string, defaultPrice: number }) {
   const [method, setMethod] = useState('cash')
@@ -103,17 +102,6 @@ export default function PaymentForm({ orderId, defaultPrice }: { orderId: string
             <QrCode className={`w-6 h-6 ${method === 'qris' ? 'text-primary-600' : ''}`} />
             <span className="font-semibold text-sm">QRIS Manual</span>
           </button>
-
-          <button
-            type="button"
-            onClick={() => setMethod('doku')}
-            className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 transition-all ${
-              method === 'doku' ? 'bg-red-50 border-red-500 text-red-700 shadow-sm' : 'bg-white border-gray-100 text-gray-500 hover:border-gray-200 hover:bg-gray-50'
-            }`}
-          >
-            <ShieldCheck className={`w-6 h-6 ${method === 'doku' ? 'text-red-600' : ''}`} />
-            <span className="font-semibold text-sm">DOKU Gateway</span>
-          </button>
         </div>
       </div>
 
@@ -181,22 +169,6 @@ export default function PaymentForm({ orderId, defaultPrice }: { orderId: string
         </div>
       )}
 
-      {method === 'doku' && (
-        <div className="mb-8 p-5 bg-red-50 border border-red-100 rounded-2xl flex gap-4">
-          <div className="shrink-0 mt-0.5">
-             <ShieldCheck className="w-6 h-6 text-red-500" />
-          </div>
-          <div className="w-full">
-            <h3 className="font-bold text-red-900 mb-2">Generate Link Pembayaran</h3>
-            <p className="text-sm text-red-800 leading-relaxed mb-4">
-              Klik tombol di bawah ini untuk membuat link pembayaran DOKU dan mengarahkan ke halaman pembayaran.
-            </p>
-            <DokuCheckoutButton orderId={orderId} />
-          </div>
-        </div>
-      )}
-
-      {method !== 'doku' && (
         <button 
           disabled={loading || (method === 'cash' && given < finalPrice)} 
           type="submit" 
@@ -204,7 +176,6 @@ export default function PaymentForm({ orderId, defaultPrice }: { orderId: string
         >
           {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : 'Selesaikan Pembayaran'}
         </button>
-      )}
     </form>
   )
 }

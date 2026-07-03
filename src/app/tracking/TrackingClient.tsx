@@ -2,8 +2,7 @@
 
 import { useState } from 'react'
 import { trackOrder } from './actions'
-import { Search, Loader2, CheckCircle2, CreditCard, ShoppingBag, Calendar, AlignLeft } from 'lucide-react'
-import DokuCheckoutButton from '@/components/DokuCheckoutButton'
+import { Search, Loader2, CheckCircle2, CreditCard, ShoppingBag, Calendar, AlignLeft, Building2, QrCode } from 'lucide-react'
 
 export default function TrackingClient() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -255,7 +254,38 @@ export default function TrackingClient() {
                 </div>
 
                 {order.payment_status !== 'paid' && !isCancelled && (
-                  <DokuCheckoutButton orderId={order.id} className="mb-4" />
+                  <div className="mb-6 space-y-4">
+                    <div className="p-5 bg-blue-50 border border-blue-100 rounded-2xl">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Building2 className="w-5 h-5 text-blue-600" />
+                        <h4 className="font-bold text-blue-900">Transfer Bank</h4>
+                      </div>
+                      <div className="bg-white p-4 rounded-xl shadow-sm">
+                        <p className="text-sm text-gray-500 mb-1">Bank BCA</p>
+                        <p className="text-xl font-bold text-gray-900 tracking-wider">1234 5678 90</p>
+                        <p className="text-sm text-gray-700 font-medium mt-1">a.n Cemerlang Laundry</p>
+                      </div>
+                    </div>
+
+                    <div className="p-5 bg-purple-50 border border-purple-100 rounded-2xl">
+                      <div className="flex items-center gap-2 mb-3">
+                        <QrCode className="w-5 h-5 text-purple-600" />
+                        <h4 className="font-bold text-purple-900">QRIS</h4>
+                      </div>
+                      <div className="bg-white p-4 rounded-xl shadow-sm text-center">
+                        <div className="w-48 h-48 bg-gray-100 mx-auto flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 mb-3">
+                          <span className="text-gray-400 font-medium text-sm">Gambar QRIS</span>
+                        </div>
+                        <p className="text-sm text-gray-600">Scan QRIS ini menggunakan aplikasi M-Banking atau e-Wallet Anda.</p>
+                      </div>
+                    </div>
+
+                    <div className="text-center p-3 bg-gray-50 rounded-xl border border-gray-200">
+                      <p className="text-sm text-gray-600 font-medium">
+                        Setelah melakukan pembayaran, mohon infokan bukti transfer via WhatsApp di bawah.
+                      </p>
+                    </div>
+                  </div>
                 )}
 
                 {/* WA Button */}
