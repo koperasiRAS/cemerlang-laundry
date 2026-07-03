@@ -41,6 +41,9 @@ export default function Sidebar({ userRole, userName }: { userRole: string, user
     }
     
     fetchCount()
+    
+    // Fallback polling every 5 seconds if Realtime is not enabled on the DB
+    const interval = setInterval(fetchCount, 5000)
 
     const channel = supabase
       .channel('public:pickup_requests')
@@ -50,6 +53,7 @@ export default function Sidebar({ userRole, userName }: { userRole: string, user
       .subscribe()
 
     return () => {
+      clearInterval(interval)
       supabase.removeChannel(channel)
     }
   }, [])

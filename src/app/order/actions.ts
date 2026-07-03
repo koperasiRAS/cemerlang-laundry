@@ -3,11 +3,13 @@
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { revalidatePath } from 'next/cache';
 
+const getServiceRoleKey = () => process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpuZm90d2Vob2Nyc3lrdnhweWFpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MjAzMTAwOSwiZXhwIjoyMDk3NjA3MDA5fQ.cVrzyav0-01XgB9lVv69wC2rQnmOx8NcJ-QLmViGinw';
+
 export async function submitPickupRequest(formData: FormData) {
   // Bypassing RLS for public form submission using Service Role Key
   const supabase = createSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+    getServiceRoleKey()
   );
 
   const customer_name = formData.get('name') as string;
@@ -46,7 +48,7 @@ export async function submitPickupRequest(formData: FormData) {
 export async function getPublicServiceTypes() {
   const supabase = createSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+    getServiceRoleKey()
   );
 
   const { data, error } = await supabase
