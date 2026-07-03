@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Printer } from 'lucide-react';
 import qz from 'qz-tray';
 
 interface Props {
   order: any;
   items: any[];
+  autoPrint?: boolean;
 }
 
 // 58mm printer usually handles 32 characters per line.
@@ -21,8 +22,16 @@ function formatLine(left: string, right: string) {
   return left.substring(0, maxLength - rightLen - 1) + ' ' + right + '\n';
 }
 
-export default function PrintReceiptButton({ order, items }: Props) {
+export default function PrintReceiptButton({ order, items, autoPrint = false }: Props) {
   const [isPrinting, setIsPrinting] = useState(false);
+  const [hasAutoPrinted, setHasAutoPrinted] = useState(false);
+
+  useEffect(() => {
+    if (autoPrint && !hasAutoPrinted && !isPrinting) {
+      setHasAutoPrinted(true);
+      handlePrint();
+    }
+  }, [autoPrint, hasAutoPrinted, isPrinting]);
 
   const handlePrint = async () => {
     try {

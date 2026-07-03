@@ -3,12 +3,22 @@
 import { createClient } from '@/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
 
-export async function getPickupRequests() {
+export async function getPickupRequests(filter = 'active') {
   const supabase = await createClient();
-  const { data, error } = await supabase
+  
+  let query = supabase
     .from('pickup_requests')
     .select('*')
     .order('created_at', { ascending: false });
+    
+  if (filter === 'active') {
+    query = query.neq('status', 'Dibatalkan').is('order_id', null);
+  } else {
+    // Limit to latest 50 for "all history" so it doesn't grow infinitely
+    query = query.limit(50);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     console.error('Error fetching pickup requests:', error);

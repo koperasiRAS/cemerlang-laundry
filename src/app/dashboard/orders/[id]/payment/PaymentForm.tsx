@@ -47,7 +47,7 @@ export default function PaymentForm({ orderId, defaultPrice }: { orderId: string
       setLoading(false)
     } else {
       toast.success('Pembayaran berhasil!', { id: toastId })
-      router.push(`/dashboard/orders/${orderId}`)
+      router.push(`/dashboard/orders/${orderId}?print=true`)
     }
   }
 

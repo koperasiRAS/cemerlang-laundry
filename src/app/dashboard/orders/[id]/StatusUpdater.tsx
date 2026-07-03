@@ -5,23 +5,39 @@ import { updateOrderStatus } from './actions'
 import { Loader2, ArrowRightCircle, XCircle, Truck, Store } from 'lucide-react'
 import toast from 'react-hot-toast'
 
-export default function StatusUpdater({ orderId, currentStatus, defaultAddress }: { orderId: string, currentStatus: string, defaultAddress: string }) {
+export default function StatusUpdater({ orderId, currentStatus, defaultAddress, serviceName = '' }: { orderId: string, currentStatus: string, defaultAddress: string, serviceName?: string }) {
   const [loading, setLoading] = useState(false)
   const [showDeliveryModal, setShowDeliveryModal] = useState(false)
   const [deliveryFee, setDeliveryFee] = useState<number | ''>('')
   const [deliveryAddress, setDeliveryAddress] = useState(defaultAddress)
 
-  const statusFlow = ['diterima', 'proses_cuci', 'proses_kering', 'setrika_lipat', 'siap_diambil', 'diantar', 'selesai', 'dibatalkan']
+  const [showWaModal, setShowWaModal] = useState(false)
+  const [waLink, setWaLink] = useState('')
+
+  // Determine standard flow based on service name (case-insensitive)
+  const isSetrikaSaja = serviceName.toLowerCase().includes('setrika') && !serviceName.toLowerCase().includes('cuci')
+  const isCuciSaja = serviceName.toLowerCase().includes('cuci') && !serviceName.toLowerCase().includes('setrika') && !serviceName.toLowerCase().includes('kering')
+  
+  let statusFlow = ['diterima', 'proses_cuci', 'proses_kering', 'setrika_lipat', 'siap_diambil', 'diantar', 'selesai', 'dibatalkan']
+  
+  if (isSetrikaSaja) {
+    statusFlow = ['diterima', 'setrika_lipat', 'siap_diambil', 'diantar', 'selesai', 'dibatalkan']
+  } else if (isCuciSaja) {
+    statusFlow = ['diterima', 'proses_cuci', 'siap_diambil', 'diantar', 'selesai', 'dibatalkan']
+  }
+  
   const currentIndex = statusFlow.indexOf(currentStatus)
   
   // Custom logic for the branching path:
-  // If current is 'setrika_lipat', the next can be either 'siap_diambil' OR 'diantar'
+  // Find the last operational step before 'siap_diambil'
+  const lastOpStep = isCuciSaja ? 'proses_cuci' : 'setrika_lipat'
+  
   let nextStatus: string | null = null
-  if (currentStatus === 'setrika_lipat') {
+  if (currentStatus === lastOpStep) {
     nextStatus = 'siap_diambil_or_diantar'
   } else if (currentStatus === 'siap_diambil' || currentStatus === 'diantar') {
     nextStatus = 'selesai'
-  } else if (currentIndex >= 0 && currentIndex < statusFlow.indexOf('setrika_lipat')) {
+  } else if (currentIndex >= 0 && currentIndex < statusFlow.indexOf(lastOpStep)) {
     nextStatus = statusFlow[currentIndex + 1]
   }
 
@@ -34,6 +50,14 @@ export default function StatusUpdater({ orderId, currentStatus, defaultAddress }
     } else {
       toast.success(`Status berhasil diubah ke ${status.replace('_', ' ').toUpperCase()}`, { id: toastId })
       setShowDeliveryModal(false)
+      
+      // Auto-show WA prompt for specific statuses
+      if (['siap_diambil', 'diantar', 'selesai'].includes(status)) {
+         // Reload page to get new data first, then trigger WA via query param
+         window.location.href = `/dashboard/orders/${orderId}?waPrompt=true`
+      } else {
+         window.location.reload()
+      }
     }
     setLoading(false)
   }

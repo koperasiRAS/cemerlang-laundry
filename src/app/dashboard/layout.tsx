@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Sidebar from './Sidebar'
+import NotificationBell from '@/components/NotificationBell'
 
 export default async function DashboardLayout({
   children,
@@ -25,10 +26,11 @@ export default async function DashboardLayout({
       
       {/* Main Content Area */}
       <div className="flex-1 overflow-y-auto">
-        {/* Mobile Header (Only visible on mobile) */}
         <div className="lg:hidden bg-white shadow-sm border-b px-4 py-3 flex justify-between items-center sticky top-0 z-20">
-          <h1 className="font-bold text-primary-600 text-lg">Cemerlang Laundry</h1>
-          {/* Mobile menu toggle button handled inside Sidebar ideally, or simple label here */}
+          <h1 className="font-bold text-primary-600 text-lg">Cemerlang</h1>
+          <div className="flex items-center gap-2 pr-12">
+            <NotificationBell />
+          </div>
         </div>
         
         {/* Page Content */}

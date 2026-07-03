@@ -3,9 +3,10 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import StatusUpdater from './StatusUpdater'
 import PrintReceiptButton from '@/components/PrintReceiptButton'
+import WhatsAppPromptModal from '@/components/WhatsAppPromptModal'
 import { ArrowLeft, User, MapPin, Phone, CheckCircle2, Clock, FileText, PackageOpen, CreditCard, Camera, AlertTriangle, Truck, MessageCircle } from 'lucide-react'
 
-export default async function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function OrderDetailPage({ params, searchParams }: { params: Promise<{ id: string }>, searchParams?: Promise<{ print?: string, waPrompt?: string }> }) {
   const supabase = await createClient()
   
   const {
@@ -17,6 +18,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
   }
 
   const { id } = await params
+  const sp = searchParams ? await searchParams : { print: 'false' };
 
   // Fetch Order
   const { data: order, error } = await supabase
@@ -71,6 +73,8 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
 
   return (
     <div className="space-y-6">
+      <WhatsAppPromptModal showPrompt={sp.waPrompt === 'true'} waUrl={customerWaUrl} orderId={order.id} />
+      
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-6 rounded-2xl shadow-sm border border-gray-100 gap-6">
         <div>
@@ -96,13 +100,13 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
         </div>
         
         <div className="flex flex-wrap gap-3 w-full md:w-auto border-t md:border-t-0 pt-4 md:pt-0">
-           <StatusUpdater orderId={order.id} currentStatus={order.status} defaultAddress={order.customers?.address || ''} />
+           <StatusUpdater orderId={order.id} currentStatus={order.status} defaultAddress={order.customers?.address || ''} serviceName={order.service_types?.name || ''} />
            {order.payment_status === 'unpaid' && (
              <Link href={`/dashboard/orders/${order.id}/payment`} className="flex-1 md:flex-none bg-green-500 text-white px-6 py-3 rounded-xl hover:bg-green-600 font-bold flex items-center justify-center gap-2 shadow-lg shadow-green-500/30 transition-all transform hover:scale-[1.02] active:scale-95">
                <CreditCard className="w-5 h-5" /> Proses Pembayaran
              </Link>
            )}
-           <PrintReceiptButton order={order} items={items || []} />
+           <PrintReceiptButton order={order} items={items || []} autoPrint={sp.print === 'true'} />
         </div>
       </div>
 

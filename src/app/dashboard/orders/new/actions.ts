@@ -46,7 +46,10 @@ export async function createOrder(data: any) {
     if (orderData?.id) {
       await supabase
         .from('pickup_requests')
-        .update({ order_id: orderData.id })
+        .update({ 
+          order_id: orderData.id,
+          status: 'Sudah Dijemput'
+        })
         .eq('id', data.pickup_request_id)
     }
   }
