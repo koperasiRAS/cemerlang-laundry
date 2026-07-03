@@ -1,10 +1,14 @@
 'use server';
 
-import { createClient } from '@/lib/supabase/server';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { revalidatePath } from 'next/cache';
 
 export async function submitPickupRequest(formData: FormData) {
-  const supabase = await createClient();
+  // Bypassing RLS for public form submission using Service Role Key
+  const supabase = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
 
   const customer_name = formData.get('name') as string;
   const customer_phone = formData.get('phone') as string;
