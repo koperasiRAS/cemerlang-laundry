@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { MessageCircle, X } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { MessageCircle } from 'lucide-react';
 
 interface Props {
   showPrompt: boolean;
@@ -11,18 +10,16 @@ interface Props {
 }
 
 export default function WhatsAppPromptModal({ showPrompt, waUrl, orderId }: Props) {
-  const [isOpen, setIsOpen] = useState(false);
-  const router = useRouter();
+  const [isDismissed, setIsDismissed] = useState(false);
 
   useEffect(() => {
     if (showPrompt) {
-      setIsOpen(true);
-      // Clean up the URL
+      // Clean up the URL without triggering a re-render
       window.history.replaceState(null, '', `/dashboard/orders/${orderId}`);
     }
   }, [showPrompt, orderId]);
 
-  if (!isOpen) return null;
+  if (!showPrompt || isDismissed) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in">
@@ -39,13 +36,13 @@ export default function WhatsAppPromptModal({ showPrompt, waUrl, orderId }: Prop
               href={waUrl}
               target="_blank"
               rel="noopener noreferrer"
-              onClick={() => setIsOpen(false)}
+              onClick={() => setIsDismissed(true)}
               className="flex items-center justify-center gap-2 w-full bg-[#25D366] hover:bg-[#1ebd5a] text-white py-3 px-4 rounded-xl font-bold transition-all"
             >
               Kirim via WhatsApp
             </a>
             <button
-              onClick={() => setIsOpen(false)}
+              onClick={() => setIsDismissed(true)}
               className="flex items-center justify-center w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 px-4 rounded-xl font-semibold transition-all"
             >
               Nanti Saja

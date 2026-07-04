@@ -88,7 +88,7 @@ export default function ClientForm({ services, initialData }: { services: any[],
 
   if (selectedService) {
     if (selectedService.unit === 'kg') {
-      const actualWeight = parseFloat(weight) || 0
+      const actualWeight = Number.parseFloat(weight) || 0
       // Layanan express (<= 12 jam) minimum 3kg, reguler minimum 2kg
       minWeight = selectedService.estimated_duration_hours <= 12 ? 3 : 2
       chargeableWeight = Math.max(actualWeight, minWeight)
@@ -98,7 +98,7 @@ export default function ClientForm({ services, initialData }: { services: any[],
         basePrice = chargeableWeight * selectedService.base_price
       }
     } else {
-      basePrice = items.reduce((acc, curr) => acc + (parseFloat(curr.price) || 0), 0)
+      basePrice = items.reduce((acc, curr) => acc + (Number.parseFloat(curr.price) || 0), 0)
     }
   }
   
@@ -143,7 +143,7 @@ export default function ClientForm({ services, initialData }: { services: any[],
         finalItems.push({
           item_name: item.item_name,
           initial_condition_description: item.initial_condition_description,
-          price: parseInt(item.price),
+          price: Number.parseInt(item.price),
           initial_condition_image_url: imageUrl
         })
       }
@@ -161,7 +161,7 @@ export default function ClientForm({ services, initialData }: { services: any[],
         customer_phone: phone,
         customer_address: customerAddress,
         service_type_id: selectedServiceId,
-        weight: selectedService?.unit === 'kg' ? parseFloat(weight) : null,
+        weight: selectedService?.unit === 'kg' ? Number.parseFloat(weight) : null,
         estimated_price: estimatedPrice,
         estimated_completion_date: estimatedDate.toISOString(),
         special_notes: discountPercent > 0 ? `[DISKON ${discountPercent}% TERAPLIKASI: -Rp ${discountAmount.toLocaleString('id-ID')}]\n${specialNotes}` : specialNotes,
@@ -184,6 +184,8 @@ export default function ClientForm({ services, initialData }: { services: any[],
   }
 
   if (trackingNo) {
+    const waText = encodeURIComponent(`Halo ${customerName},\n\nTerima kasih telah menggunakan layanan Cemerlang Laundry. Berikut adalah nomor resi pesanan Anda: *${trackingNo}*\n\nAnda dapat melacak status pesanan secara online melalui website kami: https://${globalThis.location.host}/tracking\n\nTerima kasih!`);
+
     return (
       <div className="bg-white/90 backdrop-blur-sm p-8 md:p-12 rounded-3xl shadow-sm border border-primary-100 text-center max-w-2xl mx-auto mt-12 hover:shadow-md transition-shadow">
         <div className="w-20 h-20 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -198,7 +200,7 @@ export default function ClientForm({ services, initialData }: { services: any[],
         
         <div className="pt-6 border-t border-gray-100 flex flex-col sm:flex-row gap-4 justify-center">
           <a
-            href={`https://wa.me/${phone.replace(/^0/, '62')}?text=${encodeURIComponent(`Halo ${customerName},\n\nTerima kasih telah menggunakan layanan Cemerlang Laundry. Berikut adalah nomor resi pesanan Anda: *${trackingNo}*\n\nAnda dapat melacak status pesanan secara online melalui website kami: https://${window.location.host}/tracking\n\nTerima kasih!`)}`}
+            href={`https://wa.me/${phone.replace(/^0/, '62')}?text=${waText}`}
             target="_blank"
             rel="noopener noreferrer"
             className="w-full sm:w-auto px-8 py-3.5 bg-[#25D366] hover:bg-[#128C7E] text-white font-semibold rounded-xl transition-all shadow-lg shadow-[#25D366]/30 flex items-center justify-center gap-2 hover:-translate-y-1"
@@ -206,7 +208,7 @@ export default function ClientForm({ services, initialData }: { services: any[],
             Kirim Resi via WhatsApp
           </a>
           <button 
-            onClick={() => window.location.reload()} 
+            onClick={() => globalThis.location.reload()} 
             className="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 text-white font-semibold rounded-xl transition-all shadow-lg shadow-primary-500/30 flex items-center justify-center gap-2 hover:-translate-y-1"
           >
             <Plus className="w-5 h-5" /> Buat Order Baru
@@ -307,9 +309,9 @@ export default function ClientForm({ services, initialData }: { services: any[],
                 />
                 <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">KG</div>
               </div>
-              {weight && parseFloat(weight) > 0 && parseFloat(weight) < minWeight && (
+              {weight && Number.parseFloat(weight) > 0 && Number.parseFloat(weight) < minWeight && (
                 <p className="text-xs text-orange-600 mt-2 font-medium bg-orange-50 p-2 rounded-lg border border-orange-100">
-                  *Berat aktual {parseFloat(weight)} kg, namun karena layanan ini diprioritaskan, otomatis dihitung minimum transaksi {minWeight} kg.
+                  *Berat aktual {Number.parseFloat(weight)} kg, namun karena layanan ini diprioritaskan, otomatis dihitung minimum transaksi {minWeight} kg.
                 </p>
               )}
             </div>
@@ -390,7 +392,7 @@ export default function ClientForm({ services, initialData }: { services: any[],
               max="100"
               value={discountPercent} 
               onChange={(e) => {
-                let val = parseInt(e.target.value) || 0;
+                let val = Number.parseInt(e.target.value) || 0;
                 if (val > 100) val = 100;
                 if (val < 0) val = 0;
                 setDiscountPercent(val);

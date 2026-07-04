@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Printer } from 'lucide-react';
 import qz from 'qz-tray';
 
@@ -24,16 +24,9 @@ function formatLine(left: string, right: string) {
 
 export default function PrintReceiptButton({ order, items, autoPrint = false }: Props) {
   const [isPrinting, setIsPrinting] = useState(false);
-  const [hasAutoPrinted, setHasAutoPrinted] = useState(false);
+  const hasAutoPrinted = useRef(false);
 
-  useEffect(() => {
-    if (autoPrint && !hasAutoPrinted && !isPrinting) {
-      setHasAutoPrinted(true);
-      handlePrint();
-    }
-  }, [autoPrint, hasAutoPrinted, isPrinting]);
-
-  const handlePrint = async () => {
+  const handlePrint = useCallback(async () => {
     try {
       setIsPrinting(true);
       
@@ -127,7 +120,16 @@ export default function PrintReceiptButton({ order, items, autoPrint = false }: 
     } finally {
       setIsPrinting(false);
     }
-  };
+  }, [order, items]);
+
+  useEffect(() => {
+    if (autoPrint && !hasAutoPrinted.current && !isPrinting) {
+      hasAutoPrinted.current = true;
+      handlePrint();
+    }
+  }, [autoPrint, isPrinting, handlePrint]);
+
+
 
   return (
     <button 
