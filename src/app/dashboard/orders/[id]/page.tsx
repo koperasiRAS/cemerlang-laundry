@@ -25,8 +25,23 @@ export default async function OrderDetailPage({ params, searchParams }: { params
     .from('orders')
     .select(`
       *,
-      customers(name, phone_number, address),
-      service_types(name, unit)
+      customers (
+        name,
+        phone_number,
+        address
+      ),
+      service_types (
+        name,
+        price,
+        unit,
+        flow_type
+      ),
+      order_items (
+        id,
+        item_name,
+        qty,
+        subtotal
+      )
     `)
     .eq('id', id)
     .single()
@@ -40,6 +55,13 @@ export default async function OrderDetailPage({ params, searchParams }: { params
       </div>
     )
   }
+
+  const customerName = Array.isArray(order.customers) ? order.customers[0]?.name : (order.customers as any)?.name
+  const customerPhone = Array.isArray(order.customers) ? order.customers[0]?.phone_number : (order.customers as any)?.phone_number
+  const customerAddress = Array.isArray(order.customers) ? order.customers[0]?.address : (order.customers as any)?.address
+  
+  const serviceName = Array.isArray(order.service_types) ? order.service_types[0]?.name : (order.service_types as any)?.name
+  const flowType = Array.isArray(order.service_types) ? order.service_types[0]?.flow_type : (order.service_types as any)?.flow_type
 
   // Fetch items
   const { data: items } = await supabase
@@ -56,6 +78,17 @@ export default async function OrderDetailPage({ params, searchParams }: { params
 
   const isOverdue = new Date(order.estimated_completion_date) < new Date() && !['siap_diambil', 'selesai', 'dibatalkan', 'diantar'].includes(order.status)
   
+  const statusTranslation: Record<string, string> = {
+    diterima: 'telah DITERIMA oleh kasir',
+    proses_cuci: 'sedang dalam PROSES CUCI',
+    proses_kering: 'sedang dalam PROSES PENGERINGAN',
+    setrika_lipat: 'sedang disetrika & dilipat',
+    qc: 'sedang dalam proses QUALITY CONTROL',
+    siap_diambil: 'telah selesai dan SIAP DIAMBIL di toko',
+    diantar: 'sedang DIANTAR ke alamat Anda',
+    selesai: 'telah SELESAI dan diserahkan',
+    dibatalkan: 'telah DIBATALKAN'
+  }
   const statusLabels: Record<string, string> = {
     diterima: 'telah kami terima',
     proses_cuci: 'sedang dalam proses cuci',
@@ -67,7 +100,15 @@ export default async function OrderDetailPage({ params, searchParams }: { params
     dibatalkan: 'telah DIBATALKAN'
   }
   const totalBill = (order.final_price || order.estimated_price) + (order.delivery_fee || 0);
-  const waMessage = `Halo *${order.customers?.name}*,\n\nPesanan laundry Anda dengan nomor resi *${order.tracking_number}* saat ini ${statusLabels[order.status] || order.status}.\n\nTotal tagihan: *Rp ${totalBill.toLocaleString('id-ID')}*\n\nTerima kasih telah mempercayakan cucian Anda kepada Cemerlang Laundry!`;
+  
+  let waMessage = `Halo *${order.customers?.name}*,\n\nPesanan laundry Anda dengan nomor resi *${order.tracking_number}* saat ini ${statusLabels[order.status] || order.status}.\n\nTotal tagihan: *Rp ${totalBill.toLocaleString('id-ID')}*\n\nTerima kasih telah mempercayakan cucian Anda kepada Cemerlang Laundry!`;
+  
+  if (order.status === 'siap_diambil') {
+    waMessage = `Halo kak *${order.customers?.name}*,\n\nKabar gembira! Cucian kakak dengan resi *${order.tracking_number}* sudah wangi, rapi, dan **SIAP DIAMBIL** di toko kami ya. 🎉\n\nTotal tagihan: *Rp ${totalBill.toLocaleString('id-ID')}*\n\nDitunggu kedatangannya kak, terima kasih banyak sudah laundry di Cemerlang Laundry! ✨`;
+  } else if (order.status === 'diantar') {
+    waMessage = `Halo kak *${order.customers?.name}*,\n\nCucian kakak dengan resi *${order.tracking_number}* sudah selesai dan saat ini **SEDANG DALAM PERJALANAN** untuk diantar ke alamat kakak. 🛵💨\n\nTotal tagihan (termasuk ongkir): *Rp ${totalBill.toLocaleString('id-ID')}*\n\nMohon ditunggu ya kak, terima kasih banyak sudah laundry di Cemerlang Laundry! ✨`;
+  }
+  
   const cleanCustomerPhone = order.customers?.phone_number ? order.customers.phone_number.replace(/[^0-9]/g, '') : '';
   const customerWaUrl = `https://wa.me/${cleanCustomerPhone.startsWith('0') ? '62' + cleanCustomerPhone.slice(1) : cleanCustomerPhone}?text=${encodeURIComponent(waMessage)}`;
 

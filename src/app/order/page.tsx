@@ -187,6 +187,18 @@ export default function OrderPage() {
               </div>
 
               <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Metode Pengembalian *</label>
+                <select
+                  name="return_method"
+                  required
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500"
+                >
+                  <option value="ambil_sendiri">Ambil Sendiri di Toko</option>
+                  <option value="diantar">Minta Diantar Kembali</option>
+                </select>
+              </div>
+
+              <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">Catatan Khusus (Opsional)</label>
                 <textarea
                   name="notes"

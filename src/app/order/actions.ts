@@ -19,6 +19,7 @@ export async function submitPickupRequest(formData: FormData) {
   const service_type_estimate = formData.get('service_type') as string;
   const preferred_date = formData.get('date') as string;
   const preferred_time_slot = formData.get('time_slot') as string;
+  const return_method = formData.get('return_method') as string;
   const special_notes = formData.get('notes') as string;
 
   const { data, error } = await supabase
@@ -31,6 +32,7 @@ export async function submitPickupRequest(formData: FormData) {
       service_type_estimate,
       preferred_date,
       preferred_time_slot,
+      return_method,
       special_notes
     })
     .select()

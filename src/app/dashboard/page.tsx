@@ -89,6 +89,18 @@ export default async function DashboardPage() {
     .order('created_at', { ascending: false })
     .limit(5)
 
+  // --- Fetch Today's Payments for Cashier Breakdown ---
+  const { data: todayPayments } = await supabase
+    .from('orders')
+    .select('final_price, payment_method')
+    .eq('payment_status', 'lunas')
+    .gte('created_at', startOfTodayUtc)
+    .lte('created_at', endOfTodayUtc)
+
+  const cashTotal = todayPayments?.filter(p => p.payment_method === 'cash').reduce((sum, p) => sum + (p.final_price || 0), 0) || 0;
+  const qrisTotal = todayPayments?.filter(p => p.payment_method === 'qris').reduce((sum, p) => sum + (p.final_price || 0), 0) || 0;
+  const transferTotal = todayPayments?.filter(p => p.payment_method === 'transfer_bank').reduce((sum, p) => sum + (p.final_price || 0), 0) || 0;
+
   return (
     <div className="space-y-6 pb-12">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -174,6 +186,31 @@ export default async function DashboardPage() {
           <p className="text-lg font-black tracking-tight mt-1">
             Rp {(todayStats.laba_bersih || 0).toLocaleString('id-ID')}
           </p>
+        </div>
+      </div>
+
+      {/* Rincian Kasir Hari Ini (NEW) */}
+      <div className="bg-white/90 backdrop-blur-sm p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col md:flex-row gap-6 items-center justify-between mt-2">
+        <div>
+          <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+            <Wallet className="w-5 h-5 text-emerald-500" />
+            Rincian Penerimaan Hari Ini
+          </h2>
+          <p className="text-sm text-gray-500 mt-1">Total uang yang diterima kasir berdasarkan metode pembayaran.</p>
+        </div>
+        <div className="flex gap-4 w-full md:w-auto overflow-x-auto hide-scrollbar pb-2 md:pb-0">
+          <div className="bg-emerald-50 border border-emerald-100 px-5 py-3 rounded-2xl min-w-[140px]">
+            <p className="text-xs font-bold text-emerald-700 uppercase mb-1">Tunai / Cash</p>
+            <p className="text-lg font-black text-gray-900">Rp {cashTotal.toLocaleString('id-ID')}</p>
+          </div>
+          <div className="bg-blue-50 border border-blue-100 px-5 py-3 rounded-2xl min-w-[140px]">
+            <p className="text-xs font-bold text-blue-700 uppercase mb-1">QRIS</p>
+            <p className="text-lg font-black text-gray-900">Rp {qrisTotal.toLocaleString('id-ID')}</p>
+          </div>
+          <div className="bg-purple-50 border border-purple-100 px-5 py-3 rounded-2xl min-w-[140px]">
+            <p className="text-xs font-bold text-purple-700 uppercase mb-1">Transfer Bank</p>
+            <p className="text-lg font-black text-gray-900">Rp {transferTotal.toLocaleString('id-ID')}</p>
+          </div>
         </div>
       </div>
 

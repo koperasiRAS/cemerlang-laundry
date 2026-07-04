@@ -99,6 +99,11 @@ export default async function PickupsPage({ searchParams }: { searchParams: { fi
                         </div>
                       </div>
                       
+                      {req.return_method && (
+                        <div className="mt-2 text-sm text-gray-700 bg-gray-50 border border-gray-200 p-2 rounded-lg font-medium">
+                          Pengembalian: <span className="text-primary-700">{req.return_method === 'ambil_sendiri' ? 'Ambil Sendiri di Toko' : 'Diantar Kembali'}</span>
+                        </div>
+                      )}
                       {req.special_notes && (
                         <div className="mt-2 p-3 bg-yellow-50 text-yellow-800 text-sm rounded-lg border border-yellow-100">
                           <strong>Catatan:</strong> {req.special_notes}
@@ -107,6 +112,8 @@ export default async function PickupsPage({ searchParams }: { searchParams: { fi
                     </div>
                   </div>
                 </div>
+
+
 
                 <div className="flex flex-col gap-3 min-w-[200px] border-t xl:border-t-0 xl:border-l border-gray-100 pt-4 xl:pt-0 xl:pl-6 justify-center">
                   <a

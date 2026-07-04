@@ -83,9 +83,20 @@ export default function ClientForm({ services, initialData }: { services: any[],
 
   // Calculate estimated price
   let basePrice = 0
+  let minWeight = 0
+  let chargeableWeight = 0
+
   if (selectedService) {
     if (selectedService.unit === 'kg') {
-      basePrice = (parseFloat(weight) || 0) * selectedService.base_price
+      const actualWeight = parseFloat(weight) || 0
+      // Layanan express (<= 12 jam) minimum 3kg, reguler minimum 2kg
+      minWeight = selectedService.estimated_duration_hours <= 12 ? 3 : 2
+      chargeableWeight = Math.max(actualWeight, minWeight)
+      
+      // Only apply min weight if they entered *something* greater than 0
+      if (actualWeight > 0) {
+        basePrice = chargeableWeight * selectedService.base_price
+      }
     } else {
       basePrice = items.reduce((acc, curr) => acc + (parseFloat(curr.price) || 0), 0)
     }
@@ -154,7 +165,10 @@ export default function ClientForm({ services, initialData }: { services: any[],
         estimated_price: estimatedPrice,
         estimated_completion_date: estimatedDate.toISOString(),
         special_notes: discountPercent > 0 ? `[DISKON ${discountPercent}% TERAPLIKASI: -Rp ${discountAmount.toLocaleString('id-ID')}]\n${specialNotes}` : specialNotes,
-        items: selectedService?.unit === 'item' ? finalItems : []
+        items: selectedService?.unit === 'item' ? finalItems : [],
+        discount_percent: discountPercent,
+        discount_amount: discountAmount,
+        base_price: basePrice
       }
 
       const res = await createOrder(orderData)
@@ -293,6 +307,11 @@ export default function ClientForm({ services, initialData }: { services: any[],
                 />
                 <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">KG</div>
               </div>
+              {weight && parseFloat(weight) > 0 && parseFloat(weight) < minWeight && (
+                <p className="text-xs text-orange-600 mt-2 font-medium bg-orange-50 p-2 rounded-lg border border-orange-100">
+                  *Berat aktual {parseFloat(weight)} kg, namun karena layanan ini diprioritaskan, otomatis dihitung minimum transaksi {minWeight} kg.
+                </p>
+              )}
             </div>
           )}
         </div>

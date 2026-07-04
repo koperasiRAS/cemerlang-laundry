@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { logAudit } from '@/lib/audit'
 
 export async function updateOrderStatus(
   orderId: string, 
@@ -36,6 +37,13 @@ export async function updateOrderStatus(
       status: newStatus,
       changed_by: user.id
     })
+
+  // 3. AUDIT LOGGING
+  if (newStatus === 'dibatalkan') {
+    await logAudit(orderId, 'ORDER_VOIDED', {
+      reason: 'Dibatalkan manual oleh pengguna'
+    })
+  }
 
   revalidatePath(`/dashboard/orders/${orderId}`)
   revalidatePath('/dashboard/orders')

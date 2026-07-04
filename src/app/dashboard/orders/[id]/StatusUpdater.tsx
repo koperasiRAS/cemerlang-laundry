@@ -5,32 +5,26 @@ import { updateOrderStatus } from './actions'
 import { Loader2, ArrowRightCircle, XCircle, Truck, Store } from 'lucide-react'
 import toast from 'react-hot-toast'
 
-export default function StatusUpdater({ orderId, currentStatus, defaultAddress, serviceName = '' }: { orderId: string, currentStatus: string, defaultAddress: string, serviceName?: string }) {
+export default function StatusUpdater({ orderId, currentStatus, defaultAddress, serviceName = '', flowType = 'cuci_komplit' }: { orderId: string, currentStatus: string, defaultAddress: string, serviceName?: string, flowType?: string }) {
   const [loading, setLoading] = useState(false)
   const [showDeliveryModal, setShowDeliveryModal] = useState(false)
   const [deliveryFee, setDeliveryFee] = useState<number | ''>('')
   const [deliveryAddress, setDeliveryAddress] = useState(defaultAddress)
 
-  const [showWaModal, setShowWaModal] = useState(false)
-  const [waLink, setWaLink] = useState('')
-
-  // Determine standard flow based on service name (case-insensitive)
-  const isSetrikaSaja = serviceName.toLowerCase().includes('setrika') && !serviceName.toLowerCase().includes('cuci')
-  const isCuciSaja = serviceName.toLowerCase().includes('cuci') && !serviceName.toLowerCase().includes('setrika') && !serviceName.toLowerCase().includes('kering')
-  
+  // Standard full flow
   let statusFlow = ['diterima', 'proses_cuci', 'proses_kering', 'setrika_lipat', 'siap_diambil', 'diantar', 'selesai', 'dibatalkan']
+  let lastOpStep = 'setrika_lipat'
   
-  if (isSetrikaSaja) {
+  if (flowType === 'setrika_saja') {
     statusFlow = ['diterima', 'setrika_lipat', 'siap_diambil', 'diantar', 'selesai', 'dibatalkan']
-  } else if (isCuciSaja) {
-    statusFlow = ['diterima', 'proses_cuci', 'siap_diambil', 'diantar', 'selesai', 'dibatalkan']
+    lastOpStep = 'setrika_lipat'
+  } else if (flowType === 'cuci_kering_lipat' || flowType === 'cuci_saja') {
+    // cuci -> kering -> siap_diambil
+    statusFlow = ['diterima', 'proses_cuci', 'proses_kering', 'siap_diambil', 'diantar', 'selesai', 'dibatalkan']
+    lastOpStep = 'proses_kering'
   }
   
   const currentIndex = statusFlow.indexOf(currentStatus)
-  
-  // Custom logic for the branching path:
-  // Find the last operational step before 'siap_diambil'
-  const lastOpStep = isCuciSaja ? 'proses_cuci' : 'setrika_lipat'
   
   let nextStatus: string | null = null
   if (currentStatus === lastOpStep) {
@@ -51,8 +45,8 @@ export default function StatusUpdater({ orderId, currentStatus, defaultAddress, 
       toast.success(`Status berhasil diubah ke ${status.replace('_', ' ').toUpperCase()}`, { id: toastId })
       setShowDeliveryModal(false)
       
-      // Auto-show WA prompt for specific statuses
-      if (['siap_diambil', 'diantar', 'selesai'].includes(status)) {
+      // Auto-show WA prompt for specific statuses (Opsi A: Siap Diambil / Diantar saja)
+      if (['siap_diambil', 'diantar'].includes(status)) {
          // Reload page to get new data first, then trigger WA via query param
          window.location.href = `/dashboard/orders/${orderId}?waPrompt=true`
       } else {
@@ -66,18 +60,18 @@ export default function StatusUpdater({ orderId, currentStatus, defaultAddress, 
     <>
       <div className="flex flex-wrap gap-3 w-full sm:w-auto mt-4 md:mt-0">
         {nextStatus === 'siap_diambil_or_diantar' ? (
-          <button
-            disabled={loading}
-            onClick={() => setShowDeliveryModal(true)}
-            className="flex-1 sm:flex-none bg-primary-600 text-white px-6 py-3 rounded-xl hover:bg-primary-700 font-bold disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-primary-500/30 transition-all transform hover:scale-[1.02] active:scale-95"
-          >
-            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
-              <>
-                Lanjut ke Tahap Akhir
-                <ArrowRightCircle className="w-5 h-5" />
-              </>
-            )}
-          </button>
+            <button
+              disabled={loading}
+              onClick={() => setShowDeliveryModal(true)}
+              className="flex-1 sm:flex-none bg-primary-600 text-white px-6 py-3 rounded-xl hover:bg-primary-700 font-bold disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-primary-500/30 transition-all transform hover:scale-[1.02] active:scale-95"
+            >
+              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
+                <>
+                  Barang Selesai & Lanjut
+                  <ArrowRightCircle className="w-5 h-5" />
+                </>
+              )}
+            </button>
         ) : nextStatus ? (
           <button
             disabled={loading}
