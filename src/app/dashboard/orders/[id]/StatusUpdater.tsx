@@ -5,10 +5,10 @@ import { updateOrderStatus } from './actions'
 import { Loader2, ArrowRightCircle, XCircle, Truck, Store } from 'lucide-react'
 import toast from 'react-hot-toast'
 
-export default function StatusUpdater({ orderId, currentStatus, defaultAddress, serviceName = '', flowType = 'cuci_komplit' }: { orderId: string, currentStatus: string, defaultAddress: string, serviceName?: string, flowType?: string }) {
+export default function StatusUpdater({ orderId, currentStatus, defaultAddress, serviceName = '', flowType = 'cuci_komplit', weight = 0 }: { orderId: string, currentStatus: string, defaultAddress: string, serviceName?: string, flowType?: string, weight?: number }) {
   const [loading, setLoading] = useState(false)
   const [showDeliveryModal, setShowDeliveryModal] = useState(false)
-  const [deliveryFee, setDeliveryFee] = useState<number | ''>('')
+  const [deliveryFee, setDeliveryFee] = useState<number | ''>(weight >= 5 ? 0 : '')
   const [deliveryAddress, setDeliveryAddress] = useState(defaultAddress)
 
   // Standard full flow
@@ -141,7 +141,7 @@ export default function StatusUpdater({ orderId, currentStatus, defaultAddress, 
                     className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     placeholder="0 (jika gratis)"
                   />
-                  <p className="text-xs text-gray-500 mt-1">Rekomendasi: &lt; 3km = Gratis, 3-5km = Rp5.000</p>
+                  <p className="text-xs text-gray-500 mt-1">Rekomendasi: Berat &ge; 5kg = Gratis, &lt; 5kg = Rp5.000</p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Alamat Tujuan</label>
