@@ -32,7 +32,7 @@ export default async function OrderDetailPage({ params, searchParams }: { params
       ),
       service_types (
         name,
-        price,
+        base_price,
         unit,
         flow_type
       ),
