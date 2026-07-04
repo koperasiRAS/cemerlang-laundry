@@ -39,8 +39,9 @@ export default async function OrderDetailPage({ params, searchParams }: { params
       order_items (
         id,
         item_name,
-        qty,
-        subtotal
+        price,
+        initial_condition_description,
+        initial_condition_image_url
       )
     `)
     .eq('id', id)

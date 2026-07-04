@@ -12,7 +12,8 @@ TRUNCATE TABLE public.order_items RESTART IDENTITY CASCADE;
 -- 3. Hapus pengeluaran (expenses)
 TRUNCATE TABLE public.expenses RESTART IDENTITY CASCADE;
 
--- 4. Hapus data order utama
+-- 4. Hapus data order utama dan log auditnya
+TRUNCATE TABLE public.audit_logs RESTART IDENTITY CASCADE;
 TRUNCATE TABLE public.orders RESTART IDENTITY CASCADE;
 
 -- 5. Hapus data pelanggan (Opsional: Kalau mau pelanggannya tetap ada, comment baris di bawah ini)
