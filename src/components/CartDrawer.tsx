@@ -6,7 +6,7 @@ import Image from 'next/image'
 
 export default function CartDrawer() {
   const { cart, isCartOpen, setIsCartOpen, updateQuantity, removeFromCart, totalItems, totalPrice } = useCart()
-  const WHATSAPP_NUMBER = "6287779560264"
+  const WHATSAPP_NUMBER = "6282138056837"
 
   if (!isCartOpen) return null
 

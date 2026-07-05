@@ -11,7 +11,7 @@ export default function FloatingWhatsApp() {
     return null
   }
 
-  const WHATSAPP_NUMBER = "6287779560264"
+  const WHATSAPP_NUMBER = "6282138056837"
   const message = "Halo Cemerlang Laundry, saya ingin bertanya tentang layanan Anda."
 
   return (

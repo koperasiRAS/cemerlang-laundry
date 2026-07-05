@@ -40,7 +40,7 @@ export default function RefundPage() {
             <h3 className="text-xl font-bold text-gray-900 mt-8 mb-4">3. Prosedur Pengajuan Refund</h3>
             <p>Untuk mengajukan pengembalian dana, pelanggan harus mengikuti langkah-langkah berikut:</p>
             <ol className="list-decimal pl-5 space-y-2">
-              <li>Hubungi layanan pelanggan kami via WhatsApp di nomor <strong>6287779560264</strong>.</li>
+              <li>Hubungi layanan pelanggan kami via WhatsApp di nomor <strong>6282138056837</strong>.</li>
               <li>Sertakan Nomor Resi Pesanan (`LDY-xxxx`), nama lengkap, dan alasan pengajuan *refund*.</li>
               <li>Lampirkan bukti foto atau video jika terkait kerusakan barang.</li>
               <li>Tim kami akan meninjau laporan Anda selambat-lambatnya 2x24 jam kerja.</li>

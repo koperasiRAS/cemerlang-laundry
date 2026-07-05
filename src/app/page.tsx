@@ -389,7 +389,7 @@ export default function LandingPage() {
             </p>
             <div className="flex items-center gap-6 text-sm text-gray-500">
               <span className="flex items-center gap-2"><MapPin className="w-4 h-4" /> Jl. Boulevard Grand Depok City</span>
-              <span className="flex items-center gap-2"><Phone className="w-4 h-4" /> 6287779560264</span>
+              <span className="flex items-center gap-2"><Phone className="w-4 h-4" /> 6282138056837</span>
             </div>
           </div>
         </div>

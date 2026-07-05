@@ -51,7 +51,7 @@ export default function PrivacyPage() {
 
             <h3 className="text-xl font-bold text-gray-900 mt-8 mb-4">5. Menghubungi Kami</h3>
             <p>Jika Anda memiliki pertanyaan mengenai kebijakan privasi ini, atau ingin meminta penghapusan data Anda dari sistem kami setelah layanan selesai, Anda dapat menghubungi kami melalui:</p>
-            <p><strong>WhatsApp:</strong> 6287779560264<br/><strong>Email:</strong> admin@cemerlanglaundry.com</p>
+            <p><strong>WhatsApp:</strong> 6282138056837<br/><strong>Email:</strong> admin@cemerlanglaundry.com</p>
           </div>
         </div>
       </div>

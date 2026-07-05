@@ -9,7 +9,7 @@ import toast from 'react-hot-toast'
 
 export default function KatalogPage() {
   const { addToCart } = useCart()
-  const WHATSAPP_NUMBER = "6287779560264"
+  const WHATSAPP_NUMBER = "6282138056837"
   
   const handleProductOrder = (productName: string) => {
     const message = `Halo Cemerlang Laundry, saya ingin memesan produk: *${productName}*. Apakah stoknya tersedia?`

@@ -11,7 +11,7 @@ export default function TrackingClient() {
   const [orders, setOrders] = useState<any[]>([])
 
   // Nomor WhatsApp toko
-  const STORE_WHATSAPP = '6287779560264'
+  const STORE_WHATSAPP = '6282138056837'
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault()
