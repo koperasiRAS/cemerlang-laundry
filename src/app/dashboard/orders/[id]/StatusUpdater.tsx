@@ -106,7 +106,14 @@ export default function StatusUpdater({ orderId, currentStatus, defaultAddress, 
           <div className="bg-white w-full max-w-lg rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in duration-200">
             <div className="p-6 border-b border-gray-100">
               <h2 className="text-xl font-bold text-gray-900">Pilih Opsi Pengambilan</h2>
-              <p className="text-sm text-gray-500 mt-1">Order ini sudah selesai disetrika dan siap dikembalikan ke pelanggan.</p>
+              <p className="text-sm text-gray-500 mt-1">
+                {flowType === 'cuci_kering_lipat' 
+                  ? 'Order ini sudah selesai dicuci, dikeringkan, dan dilipat. Siap dikembalikan ke pelanggan.'
+                  : flowType === 'setrika_saja'
+                  ? 'Order ini sudah selesai disetrika dan dilipat. Siap dikembalikan ke pelanggan.'
+                  : 'Order ini sudah selesai dicuci, dikeringkan, disetrika, dan dilipat. Siap dikembalikan ke pelanggan.'
+                }
+              </p>
             </div>
             
             <div className="p-6 space-y-4">

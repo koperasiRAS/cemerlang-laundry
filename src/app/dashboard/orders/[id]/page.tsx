@@ -16,6 +16,10 @@ export default async function OrderDetailPage({ params, searchParams }: { params
   if (!user) {
     redirect('/login')
   }
+  
+  const tenantId = user.app_metadata?.tenant_id
+  const { data: tenant } = await supabase.from('tenants').select('name').eq('id', tenantId).single()
+  const tenantName = tenant?.name || 'Laundry'
 
   const { id } = await params
   const sp = searchParams ? await searchParams : { print: 'false' };
@@ -102,12 +106,12 @@ export default async function OrderDetailPage({ params, searchParams }: { params
   }
   const totalBill = (order.final_price || order.estimated_price) + (order.delivery_fee || 0);
   
-  let waMessage = `Halo *${order.customers?.name}*,\n\nPesanan laundry Anda dengan nomor resi *${order.tracking_number}* saat ini ${statusLabels[order.status] || order.status}.\n\nTotal tagihan: *Rp ${totalBill.toLocaleString('id-ID')}*\n\nTerima kasih telah mempercayakan cucian Anda kepada Cemerlang Laundry!`;
+  let waMessage = `Halo *${order.customers?.name}*,\n\nPesanan laundry Anda dengan nomor resi *${order.tracking_number}* saat ini ${statusLabels[order.status] || order.status}.\n\nTotal tagihan: *Rp ${totalBill.toLocaleString('id-ID')}*\n\nTerima kasih telah mempercayakan cucian Anda kepada ${tenantName}!`;
   
   if (order.status === 'siap_diambil') {
-    waMessage = `Halo kak *${order.customers?.name}*,\n\nKabar gembira! Cucian kakak dengan resi *${order.tracking_number}* sudah wangi, rapi, dan **SIAP DIAMBIL** di toko kami ya. 🎉\n\nTotal tagihan: *Rp ${totalBill.toLocaleString('id-ID')}*\n\nDitunggu kedatangannya kak, terima kasih banyak sudah laundry di Cemerlang Laundry! ✨`;
+    waMessage = `Halo kak *${order.customers?.name}*,\n\nKabar gembira! Cucian kakak dengan resi *${order.tracking_number}* sudah wangi, rapi, dan **SIAP DIAMBIL** di toko kami ya. 🎉\n\nTotal tagihan: *Rp ${totalBill.toLocaleString('id-ID')}*\n\nDitunggu kedatangannya kak, terima kasih banyak sudah laundry di ${tenantName}! ✨`;
   } else if (order.status === 'diantar') {
-    waMessage = `Halo kak *${order.customers?.name}*,\n\nCucian kakak dengan resi *${order.tracking_number}* sudah selesai dan saat ini **SEDANG DALAM PERJALANAN** untuk diantar ke alamat kakak. 🛵💨\n\nTotal tagihan (termasuk ongkir): *Rp ${totalBill.toLocaleString('id-ID')}*\n\nMohon ditunggu ya kak, terima kasih banyak sudah laundry di Cemerlang Laundry! ✨`;
+    waMessage = `Halo kak *${order.customers?.name}*,\n\nCucian kakak dengan resi *${order.tracking_number}* sudah selesai dan saat ini **SEDANG DALAM PERJALANAN** untuk diantar ke alamat kakak. 🛵💨\n\nTotal tagihan (termasuk ongkir): *Rp ${totalBill.toLocaleString('id-ID')}*\n\nMohon ditunggu ya kak, terima kasih banyak sudah laundry di ${tenantName}! ✨`;
   }
   
   const cleanCustomerPhone = order.customers?.phone_number ? order.customers.phone_number.replace(/[^0-9]/g, '') : '';
@@ -147,6 +151,7 @@ export default async function OrderDetailPage({ params, searchParams }: { params
              currentStatus={order.status} 
              defaultAddress={order.customers?.address || ''} 
              serviceName={order.service_types?.name || ''} 
+             flowType={flowType || 'cuci_komplit'}
              weight={order.weight || 0} 
            />
            {order.payment_status === 'unpaid' && (
