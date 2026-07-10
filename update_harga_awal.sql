@@ -1,51 +1,46 @@
 -- ============================================================
--- SCRIPT FIX LENGKAP: NAMA, HARGA, & FLOW TYPE
--- Sesuai SEMUA Halaman Buku Pricelist Cemerlang Laundry
+-- SCRIPT FIX PRICELIST V3 — 10 Juli 2026
+-- Berdasarkan feedback kasir + buku pricelist
 -- ============================================================
 
 -- ============================================================
--- BAGIAN A: FIX LAYANAN KILOAN
+-- BAGIAN A: HAPUS/NONAKTIFKAN "Setrika Saja" (TIDAK ADA DI BUKU)
+-- Di buku cuma ada "Setrika Komplit", bukan "Setrika Saja"
 -- ============================================================
 
--- A1. Rename "Cuci Setrika (12 Jam Selesai)" → "Cuci Komplit (12 Jam Selesai)"
---     Karena di buku, 12 Jam itu masuk Cuci Komplit
+-- Nonaktifkan SEMUA entry "Setrika Saja" (supaya tidak muncul di dropdown kasir)
 UPDATE public.service_types 
-SET name = 'Cuci Komplit (12 Jam Selesai)', base_price = 15000, flow_type = 'cuci_komplit'
-WHERE name ILIKE '%Cuci Setrika%' AND name ILIKE '%12 Jam%';
+SET is_active = false 
+WHERE name ILIKE '%Setrika Saja%';
 
--- A2. Rename "Cuci Setrika (3 Hari)" → "Setrika Komplit (3 Hari Selesai)"
-UPDATE public.service_types 
-SET name = 'Setrika Komplit (3 Hari Selesai)', base_price = 5000, flow_type = 'setrika_saja'
-WHERE name ILIKE '%Cuci Setrika%' AND name ILIKE '%3 Hari%';
+-- ============================================================
+-- BAGIAN B: FIX HARGA SETRIKA KOMPLIT (sesuai buku & feedback kasir)
+-- Kasir bilang: "strika 3hari 5000" dan "Strika 1 hari 8000"
+-- ============================================================
+UPDATE public.service_types SET base_price = 5000,  flow_type = 'setrika_saja' WHERE name ILIKE 'Setrika Komplit%' AND name ILIKE '%3 Hari%';
+UPDATE public.service_types SET base_price = 6500,  flow_type = 'setrika_saja' WHERE name ILIKE 'Setrika Komplit%' AND name ILIKE '%2 Hari%';
+UPDATE public.service_types SET base_price = 8000,  flow_type = 'setrika_saja' WHERE name ILIKE 'Setrika Komplit%' AND name ILIKE '%1 Hari%';
 
--- A3. Rename "Cuci Setrika (2 Hari)" → "Setrika Komplit (2 Hari Selesai)"
-UPDATE public.service_types 
-SET name = 'Setrika Komplit (2 Hari Selesai)', base_price = 6500, flow_type = 'setrika_saja'
-WHERE name ILIKE '%Cuci Setrika%' AND name ILIKE '%2 Hari%';
+-- ============================================================
+-- BAGIAN C: FIX HARGA CUCI KOMPLIT (sesuai buku)
+-- ============================================================
+UPDATE public.service_types SET base_price = 7000,  flow_type = 'cuci_komplit' WHERE name ILIKE 'Cuci Komplit%' AND name ILIKE '%3 Hari%';
+UPDATE public.service_types SET base_price = 9000,  flow_type = 'cuci_komplit' WHERE name ILIKE 'Cuci Komplit%' AND name ILIKE '%2 Hari%';
+UPDATE public.service_types SET base_price = 10000, flow_type = 'cuci_komplit' WHERE name ILIKE 'Cuci Komplit%' AND name ILIKE '%1 Hari%' AND name NOT ILIKE '%12 Jam%';
+UPDATE public.service_types SET base_price = 15000, flow_type = 'cuci_komplit' WHERE name ILIKE 'Cuci Komplit%' AND name ILIKE '%12 Jam%';
 
--- A4. Rename "Cuci Setrika (1 Hari)" → "Setrika Komplit (1 Hari Selesai)"
-UPDATE public.service_types 
-SET name = 'Setrika Komplit (1 Hari Selesai)', base_price = 8000, flow_type = 'setrika_saja'
-WHERE name ILIKE '%Cuci Setrika%' AND name ILIKE '%1 Hari%';
+-- ============================================================
+-- BAGIAN D: CUCI KERING LIPAT (sesuai buku Rp 5.000)
+-- ============================================================
+UPDATE public.service_types SET base_price = 5000, flow_type = 'cuci_kering_lipat' WHERE name ILIKE '%Cuci Kering Lipat%';
 
--- A5. Rename "Cuci Komplit Express (3 Jam)" → "Cuci Kering Lipat (3 Jam)"
---     Di buku ini Rp 5.000, BUKAN 15rb
-UPDATE public.service_types 
-SET name = 'Cuci Kering Lipat (3 Jam)', base_price = 5000, flow_type = 'cuci_kering_lipat'
-WHERE name ILIKE '%Cuci Komplit Express%' OR (name ILIKE '%Cuci Komplit%' AND name ILIKE '%3 Jam%');
-
--- A6. Fix harga Cuci Komplit (yang sudah benar namanya)
-UPDATE public.service_types SET base_price = 7000,  flow_type = 'cuci_komplit' WHERE name ILIKE 'Cuci Komplit%3 Hari%';
-UPDATE public.service_types SET base_price = 9000,  flow_type = 'cuci_komplit' WHERE name ILIKE 'Cuci Komplit%2 Hari%';
-UPDATE public.service_types SET base_price = 10000, flow_type = 'cuci_komplit' WHERE name ILIKE 'Cuci Komplit%1 Hari%' AND name NOT ILIKE '%12 Jam%';
-UPDATE public.service_types SET base_price = 15000, flow_type = 'cuci_komplit' WHERE name ILIKE 'Cuci Komplit%12 Jam%';
-
--- A7. Cuci Kiloan Reguler (tidak ada di buku pricelist, nonaktifkan)
--- Kalau mau tetap aktif, beri tanda -- di baris bawah:
+-- ============================================================
+-- BAGIAN E: NONAKTIFKAN LAYANAN YANG TIDAK ADA DI BUKU
+-- ============================================================
 UPDATE public.service_types SET is_active = false WHERE name ILIKE '%Cuci Kiloan Reguler%';
 
 -- ============================================================
--- BAGIAN B: FIX LAYANAN SATUAN — Halaman Pakaian
+-- BAGIAN F: FIX HARGA SATUAN — Pakaian (Halaman 1 Buku)
 -- ============================================================
 UPDATE public.service_types SET base_price = 15000 WHERE name ILIKE 'Jacket' AND unit = 'item';
 UPDATE public.service_types SET base_price = 45000 WHERE name ILIKE 'Jacket Kulit%' AND unit = 'item';
@@ -62,7 +57,7 @@ UPDATE public.service_types SET base_price = 10000 WHERE name ILIKE 'Topi' AND u
 UPDATE public.service_types SET base_price = 8000  WHERE name ILIKE 'Dasi' AND unit = 'item';
 
 -- ============================================================
--- BAGIAN C: FIX LAYANAN SATUAN — Halaman Formal/Pesta
+-- BAGIAN G: FIX HARGA SATUAN — Formal/Pesta (Halaman 2 Buku)
 -- ============================================================
 UPDATE public.service_types SET base_price = 25000  WHERE name ILIKE 'Long Dress%' AND unit = 'item';
 UPDATE public.service_types SET base_price = 15000  WHERE name ILIKE 'Blouse' AND unit = 'item';
@@ -78,7 +73,7 @@ UPDATE public.service_types SET base_price = 35000  WHERE name ILIKE 'Safari Set
 UPDATE public.service_types SET base_price = 8000   WHERE name ILIKE 'Kerudung%' AND unit = 'item';
 
 -- ============================================================
--- BAGIAN D: FIX LAYANAN SATUAN — Halaman Rumah Tangga
+-- BAGIAN H: FIX HARGA SATUAN — Rumah Tangga (Halaman 3 Buku)
 -- ============================================================
 UPDATE public.service_types SET base_price = 35000 WHERE name ILIKE 'Bed Cover Besar%' AND unit = 'item';
 UPDATE public.service_types SET base_price = 25000 WHERE name ILIKE 'Bed Cover Kecil%' AND unit = 'item';
@@ -90,21 +85,20 @@ UPDATE public.service_types SET base_price = 50000 WHERE name ILIKE 'Boneka Besa
 UPDATE public.service_types SET base_price = 30000 WHERE name ILIKE 'Boneka Sedang%' AND unit = 'item';
 UPDATE public.service_types SET base_price = 15000 WHERE name ILIKE 'Boneka Kecil%' AND unit = 'item';
 UPDATE public.service_types SET base_price = 15000 WHERE name ILIKE 'Gordyn Tebal%' AND unit = 'item';
-UPDATE public.service_types SET base_price = 5000  WHERE name ILIKE 'Gordyn Tipis%' AND unit = 'item';
+UPDATE public.service_types SET base_price = 7000  WHERE name ILIKE 'Gordyn Tipis%' AND unit = 'item';
 UPDATE public.service_types SET base_price = 25000 WHERE name ILIKE 'Tas Ransel%' AND unit = 'item';
 UPDATE public.service_types SET base_price = 60000 WHERE name ILIKE 'Koper Besar%' AND unit = 'item';
 UPDATE public.service_types SET base_price = 45000 WHERE name ILIKE 'Koper Kecil%' AND unit = 'item';
 UPDATE public.service_types SET base_price = 10000 WHERE name ILIKE 'Handuk Besar%' AND unit = 'item';
 
 -- ============================================================
--- BAGIAN E: FIX LAYANAN SATUAN — Sepatu
+-- BAGIAN I: SEPATU
 -- ============================================================
 UPDATE public.service_types SET base_price = 35000 WHERE name ILIKE '%Cuci Sepatu%' AND unit = 'item';
 
 -- ============================================================
--- VERIFIKASI: Cek SEMUA layanan aktif setelah update
+-- VERIFIKASI: Tampilkan SEMUA layanan AKTIF setelah update
 -- ============================================================
 SELECT name, base_price, unit, flow_type, is_active
 FROM public.service_types 
-WHERE is_active = true
-ORDER BY unit, name;
+ORDER BY is_active DESC, unit, name;
